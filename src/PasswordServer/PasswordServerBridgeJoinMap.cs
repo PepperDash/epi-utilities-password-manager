@@ -1,14 +1,15 @@
 ﻿using PepperDash.Essentials.Core;
 
-namespace PepperDash.Essentials.Plugin.PasswordManager
+namespace PepperDash.Essentials.Plugin.Password.Server
 {
 	/// <summary>
-	/// Password Manager Bridge Join Map
+	/// Password Server Bridge Join Map
 	/// </summary>
 	/// <remarks>
-	/// Defines the EISC bridge joins for user/password management operations
+	/// Defines the EISC bridge joins for the Password Server.
+	/// Server can only be bridged once and provides status feedback and user management operations.
 	/// </remarks>
-	public class PasswordManagerBridgeJoinMap : JoinMapBaseAdvanced
+	public class PasswordServerBridgeJoinMap : JoinMapBaseAdvanced
 	{
 		#region Digital
 
@@ -348,11 +349,11 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
 		#endregion
 
 		/// <summary>
-		/// Password Manager BridgeJoinMap constructor
+		/// Password Server BridgeJoinMap constructor
 		/// </summary>
 		/// <param name="joinStart">This will be the join it starts on the EISC bridge</param>
-		public PasswordManagerBridgeJoinMap(uint joinStart)
-			: base(joinStart, typeof(PasswordManagerBridgeJoinMap))
+		public PasswordServerBridgeJoinMap(uint joinStart)
+			: base(joinStart, typeof(PasswordServerBridgeJoinMap))
 		{
 		}
 	}

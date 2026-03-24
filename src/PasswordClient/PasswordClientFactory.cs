@@ -3,23 +3,23 @@ using PepperDash.Core;
 using PepperDash.Essentials.Core;
 using PepperDash.Essentials.Core.Config;
 
-namespace PepperDash.Essentials.Plugin.PasswordManager
+namespace PepperDash.Essentials.Plugin.Password.Client
 {
     /// <summary>
-    /// Password Manager Client Factory
+    /// Password Client Factory
     /// </summary>
     /// <remarks>
-    /// Creates Password Manager Client devices.
-    /// Type key: "passwordManagerClient"
+    /// Creates Password Client devices.
+    /// Type key: "passwordClient"
     /// </remarks>
-    public class PasswordManagerClientFactory : EssentialsPluginDeviceFactory<PasswordManagerClient>
+    public class PasswordClientFactory : EssentialsPluginDeviceFactory<PasswordClient>
     {
         /// <summary>
         /// Constructor
         /// </summary>
-        public PasswordManagerClientFactory()
+        public PasswordClientFactory()
         {
-            TypeNames = new List<string> { "passwordManagerClient" };
+            TypeNames = new List<string> { "passwordClient" };
             MinimumEssentialsFrameworkVersion = "2.12.1";
         }
 
@@ -28,9 +28,9 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
         /// </summary>
         public override EssentialsDevice BuildDevice(DeviceConfig dc)
         {
-            Debug.LogMessage(Serilog.Events.LogEventLevel.Information, "[{key}] Building Password Manager Client...", dc.Key);
+            Debug.LogMessage(Serilog.Events.LogEventLevel.Information, "[{key}] Building Password Client...", dc.Key);
 
-            var config = dc.Properties.ToObject<PasswordManagerClientConfig>();
+            var config = dc.Properties.ToObject<PasswordClientConfig>();
             if (config == null)
             {
                 Debug.LogMessage(Serilog.Events.LogEventLevel.Error, "[{key}] Failed to parse config", dc.Key);
@@ -43,7 +43,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
                 return null;
             }
 
-            return new PasswordManagerClient(dc.Key, dc.Name, config);
+            return new PasswordClient(dc.Key, dc.Name, config);
         }
     }
 }

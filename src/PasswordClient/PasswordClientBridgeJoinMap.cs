@@ -1,12 +1,13 @@
 using PepperDash.Essentials.Core;
 
-namespace PepperDash.Essentials.Plugin.PasswordManager
+namespace PepperDash.Essentials.Plugin.Password.Client
 {
     /// <summary>
-    /// Password Manager Client Bridge Join Map
+    /// Password Client Bridge Join Map
     /// </summary>
     /// <remarks>
-    /// Defines the EISC bridge joins for password manager client operations.
+    /// Defines the EISC bridge joins for password client operations.
+    /// Multiple clients can be bridged to panels to interact with the server as the authentication authority.
     /// 
     /// Join Layout:
     /// 
@@ -25,7 +26,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
     ///   List/Edit (11-15)    - User list JSON, editing username, selected user info
     ///   User List (31-50)    - List item usernames
     /// </remarks>
-    public class PasswordManagerClientBridgeJoinMap : JoinMapBaseAdvanced
+    public class PasswordClientBridgeJoinMap : JoinMapBaseAdvanced
     {
         #region Digital - Feedbacks (1-7)
 
@@ -610,11 +611,11 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
         #endregion
 
         /// <summary>
-        /// Password Manager Client BridgeJoinMap constructor
+        /// Password Client BridgeJoinMap constructor
         /// </summary>
         /// <param name="joinStart">This will be the join it starts on the EISC bridge</param>
-        public PasswordManagerClientBridgeJoinMap(uint joinStart)
-            : base(joinStart, typeof(PasswordManagerClientBridgeJoinMap))
+        public PasswordClientBridgeJoinMap(uint joinStart)
+            : base(joinStart, typeof(PasswordClientBridgeJoinMap))
         {
         }
     }

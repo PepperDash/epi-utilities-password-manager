@@ -3,17 +3,19 @@ using Newtonsoft.Json;
 using PepperDash.Core;
 using PepperDash.Core.Logging;
 using PepperDash.Essentials.Core;
+using PepperDash.Essentials.Plugin.PasswordManager;
 
-namespace PepperDash.Essentials.Plugin.PasswordManager
+namespace PepperDash.Essentials.Plugin.Password.Server
 {
     /// <summary>
-    /// Password Manager Server configuration object
+    /// Password Server configuration object
     /// </summary>
     /// <remarks>
-    /// Configuration for the Password Manager Server device that stores users
+    /// Configuration for the Password Server device that stores users.
+    /// Server can only be bridged once.
     /// </remarks>
     [ConfigSnippet("\"properties\":{\"filePath\":\"PasswordManager/users.json\"}")]
-    public class PasswordManagerServerConfig
+    public class PasswordServerConfig
     {
         /// <summary>
         /// File path for storing user credentials JSON file (relative to program directory)
@@ -34,49 +36,19 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
         public long SaveDelayMs { get; set; }
 
         /// <summary>
-        /// Constructor
-        /// </summary>
-        public PasswordManagerServerConfig()
-        {
-            DefaultUsers = new List<UserCredential>();
-            SaveDelayMs = 1000;
-        }
-    }
-
-    /// <summary>
-    /// Password Manager Client configuration object
-    /// </summary>
-    /// <remarks>
-    /// Configuration for the Password Manager Client device that references a server
-    /// </remarks>
-    [ConfigSnippet("\"properties\":{\"serverKey\":\"passwordManagerServer-1\"}")]
-    public class PasswordManagerClientConfig
-    {
-        /// <summary>
-        /// The device key of the Password Manager Server to use
-        /// </summary>
-        [JsonProperty("serverKey")]
-        public string ServerKey { get; set; }
-
-        /// <summary>
         /// Whether to mask passwords in feedback (shows asterisks instead of actual password)
         /// </summary>
         [JsonProperty("maskPasswords")]
         public bool MaskPasswords { get; set; }
 
         /// <summary>
-        /// Whether to clear input fields on successful login
-        /// </summary>
-        [JsonProperty("clearInputsOnLogin")]
-        public bool ClearInputsOnLogin { get; set; }
-
-        /// <summary>
         /// Constructor
         /// </summary>
-        public PasswordManagerClientConfig()
+        public PasswordServerConfig()
         {
+            DefaultUsers = new List<UserCredential>();
+            SaveDelayMs = 1000;
             MaskPasswords = true;
-            ClearInputsOnLogin = true;
         }
     }
 }

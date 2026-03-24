@@ -7,21 +7,23 @@ using PepperDash.Core;
 using PepperDash.Core.Logging;
 using PepperDash.Essentials.Core;
 using PepperDash.Essentials.Core.Bridges;
+using PepperDash.Essentials.Plugin.Password.Server;
+using PepperDash.Essentials.Plugin.PasswordManager;
 
-namespace PepperDash.Essentials.Plugin.PasswordManager
+namespace PepperDash.Essentials.Plugin.Password.Client
 {
     /// <summary>
-    /// Password Manager Client Device
+    /// Password Client Device
     /// </summary>
     /// <remarks>
-    /// Client device that connects to a Password Manager Server.
+    /// Client device that connects to a Password Server.
     /// Provides input buffering with feedback signals and password unmask control.
-    /// Multiple clients can connect to a single server for multi-panel support.
+    /// Multiple clients can bridge to panels and interact with the server as the authentication authority.
     /// </remarks>
-    public class PasswordManagerClient : EssentialsBridgeableDevice
+    public class PasswordClient : EssentialsBridgeableDevice
     {
-        private readonly PasswordManagerClientConfig _config;
-        private PasswordManagerServer _server;
+        private readonly PasswordClientConfig _config;
+        private PasswordServer _server;
         private bool _serverConnected;
 
         // Input buffers
@@ -48,7 +50,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
 
         // Bridge references
         private BasicTriList _triList;
-        private PasswordManagerClientBridgeJoinMap _joinMap;
+        private PasswordClientBridgeJoinMap _joinMap;
 
         #region Feedbacks
 
@@ -178,7 +180,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
         /// <summary>
         /// Constructor
         /// </summary>
-        public PasswordManagerClient(string key, string name, PasswordManagerClientConfig config)
+        public PasswordClient(string key, string name, PasswordClientConfig config)
             : base(key, name)
         {
             _config = config ?? throw new ArgumentNullException(nameof(config));
@@ -242,10 +244,10 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
                 return;
             }
 
-            _server = device as PasswordManagerServer;
+            _server = device as PasswordServer;
             if (_server == null)
             {
-                this.LogInformation("Device '{0}' is not a PasswordManagerServer", _config.ServerKey);
+                this.LogInformation("Device '{0}' is not a PasswordServer", _config.ServerKey);
                 SetStatusMessage("Error: Invalid server type");
                 return;
             }
@@ -849,7 +851,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
         public override void LinkToApi(BasicTriList triList, uint joinStart, string joinMapKey, EiscApiAdvanced bridge)
         {
             _triList = triList;
-            _joinMap = new PasswordManagerClientBridgeJoinMap(joinStart);
+            _joinMap = new PasswordClientBridgeJoinMap(joinStart);
 
             if (bridge != null)
             {
