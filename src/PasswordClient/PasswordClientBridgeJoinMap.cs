@@ -12,8 +12,8 @@ namespace PepperDash.Essentials.Plugin.Password.Client
     /// Join Layout:
     /// 
     /// DIGITAL:
-    ///   Feedbacks (1-7)    - Server status and success feedbacks
-    ///   Actions (11-20)    - User actions (clear, unmask, validate, create, delete, update)
+    ///   Feedbacks (1-9)    - Server status, success feedbacks, login/admin status
+    ///   Actions (11-21)    - User actions (clear, unmask, validate, create, delete, update, logout)
     ///   Navigation (25-27) - Refresh and list navigation
     ///   User List (31-80)  - List select (31-50) and visibility (61-80)
     /// 
@@ -117,6 +117,32 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             new JoinMetadata
             {
                 Description = "Has Unsaved Changes Feedback",
+                JoinCapabilities = eJoinCapabilities.ToSIMPL,
+                JoinType = eJoinType.Digital
+            });
+
+        /// <summary>
+        /// Feedback indicating user is logged in
+        /// </summary>
+        [JoinName("IsLoggedInFb")]
+        public JoinDataComplete IsLoggedInFb = new JoinDataComplete(
+            new JoinData { JoinNumber = 8, JoinSpan = 1 },
+            new JoinMetadata
+            {
+                Description = "User Is Logged In Feedback",
+                JoinCapabilities = eJoinCapabilities.ToSIMPL,
+                JoinType = eJoinType.Digital
+            });
+
+        /// <summary>
+        /// Feedback indicating user can manage users (has admin access)
+        /// </summary>
+        [JoinName("CanManageUsersFb")]
+        public JoinDataComplete CanManageUsersFb = new JoinDataComplete(
+            new JoinData { JoinNumber = 9, JoinSpan = 1 },
+            new JoinMetadata
+            {
+                Description = "Can Manage Users (Admin Access) Feedback",
                 JoinCapabilities = eJoinCapabilities.ToSIMPL,
                 JoinType = eJoinType.Digital
             });
@@ -251,6 +277,19 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             new JoinMetadata
             {
                 Description = "Save Changes To Selected User (Pulse)",
+                JoinCapabilities = eJoinCapabilities.FromSIMPL,
+                JoinType = eJoinType.Digital
+            });
+
+        /// <summary>
+        /// Logout current user
+        /// </summary>
+        [JoinName("Logout")]
+        public JoinDataComplete Logout = new JoinDataComplete(
+            new JoinData { JoinNumber = 21, JoinSpan = 1 },
+            new JoinMetadata
+            {
+                Description = "Logout (Pulse)",
                 JoinCapabilities = eJoinCapabilities.FromSIMPL,
                 JoinType = eJoinType.Digital
             });

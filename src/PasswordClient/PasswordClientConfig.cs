@@ -35,12 +35,21 @@ namespace PepperDash.Essentials.Plugin.Password.Client
         public bool ClearInputsOnLogin { get; set; }
 
         /// <summary>
+        /// Minimum access level required to perform admin operations (create, delete, modify users).
+        /// Users must be logged in with at least this access level to manage other users.
+        /// Set to 0 to allow any logged-in user to manage users.
+        /// </summary>
+        [JsonProperty("requiredAccessLevelForAdmin")]
+        public int RequiredAccessLevelForAdmin { get; set; }
+
+        /// <summary>
         /// Constructor
         /// </summary>
         public PasswordClientConfig()
         {
             MaskPasswords = true;
             ClearInputsOnLogin = true;
+            RequiredAccessLevelForAdmin = 1;  // Default: require at least access level 1 for admin ops
         }
     }
 }

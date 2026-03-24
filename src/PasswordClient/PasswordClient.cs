@@ -164,6 +164,16 @@ namespace PepperDash.Essentials.Plugin.Password.Client
         /// </summary>
         public BoolFeedback UpdateUserSuccessFeedback { get; private set; }
 
+        /// <summary>
+        /// Is user logged in feedback
+        /// </summary>
+        public BoolFeedback IsLoggedInFeedback { get; private set; }
+
+        /// <summary>
+        /// Can manage users (has sufficient access level) feedback
+        /// </summary>
+        public BoolFeedback CanManageUsersFeedback { get; private set; }
+
         #endregion
 
         // Feedback backing values
@@ -216,6 +226,10 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             SaveEnabledFeedback = new BoolFeedback("saveEnabled", () => GetSaveEnabled());
             HasChangesFeedback = new BoolFeedback("hasChanges", () => GetHasChanges());
             UpdateUserSuccessFeedback = new BoolFeedback("updateUserSuccess", () => _updateSuccess);
+
+            // Login/Admin feedbacks
+            IsLoggedInFeedback = new BoolFeedback("isLoggedIn", () => !string.IsNullOrEmpty(_validatedUsername));
+            CanManageUsersFeedback = new BoolFeedback("canManageUsers", () => CanManageUsers());
         }
 
         /// <summary>
@@ -457,6 +471,8 @@ namespace PepperDash.Essentials.Plugin.Password.Client
                 _validatedAccess = accessLevel;
                 ValidatedUsernameFeedback.FireUpdate();
                 ValidatedUserAccessFeedback.FireUpdate();
+                IsLoggedInFeedback.FireUpdate();
+                CanManageUsersFeedback.FireUpdate();
 
                 SetOperationResult(true, false, false, false, string.Format("Login successful: {0}", _usernameInput));
 
@@ -472,6 +488,23 @@ namespace PepperDash.Essentials.Plugin.Password.Client
         }
 
         /// <summary>
+        /// Logout current user
+        /// </summary>
+        public void Logout()
+        {
+            _validatedUsername = string.Empty;
+            _validatedAccess = 0;
+
+            ValidatedUsernameFeedback.FireUpdate();
+            ValidatedUserAccessFeedback.FireUpdate();
+            IsLoggedInFeedback.FireUpdate();
+            CanManageUsersFeedback.FireUpdate();
+
+            SetStatusMessage("Logged out");
+            this.LogDebug("User logged out");
+        }
+
+        /// <summary>
         /// Create a new user
         /// </summary>
         public void CreateUser()
@@ -479,6 +512,12 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             if (_server == null)
             {
                 SetOperationResult(false, false, false, false, "Server not connected");
+                return;
+            }
+
+            if (!CanManageUsers())
+            {
+                SetOperationResult(false, false, false, false, "Access denied: insufficient privileges to create users");
                 return;
             }
 
@@ -512,6 +551,12 @@ namespace PepperDash.Essentials.Plugin.Password.Client
                 return;
             }
 
+            if (!CanManageUsers())
+            {
+                SetOperationResult(false, false, false, false, "Access denied: insufficient privileges to delete users");
+                return;
+            }
+
             if (string.IsNullOrEmpty(_usernameInput))
             {
                 SetOperationResult(false, false, false, false, "Username required");
@@ -535,6 +580,12 @@ namespace PepperDash.Essentials.Plugin.Password.Client
                 return;
             }
 
+            if (!CanManageUsers())
+            {
+                SetStatusMessage("Access denied: insufficient privileges to update users");
+                return;
+            }
+
             var username = GetSelectedUsername();
             if (string.IsNullOrEmpty(username))
             {
@@ -555,6 +606,12 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             if (_server == null)
             {
                 SetStatusMessage("Server not connected");
+                return;
+            }
+
+            if (!CanManageUsers())
+            {
+                SetStatusMessage("Access denied: insufficient privileges to update users");
                 return;
             }
 
@@ -585,6 +642,12 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             if (_server == null)
             {
                 SetOperationResult(false, false, false, false, "Server not connected");
+                return;
+            }
+
+            if (!CanManageUsers())
+            {
+                SetOperationResult(false, false, false, false, "Access denied: insufficient privileges to update users");
                 return;
             }
 
@@ -644,6 +707,12 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             if (_server == null)
             {
                 SetOperationResult(false, false, false, false, "Server not connected");
+                return;
+            }
+
+            if (!CanManageUsers())
+            {
+                SetOperationResult(false, false, false, false, "Access denied: insufficient privileges to delete users");
                 return;
             }
 
@@ -760,6 +829,19 @@ namespace PepperDash.Essentials.Plugin.Password.Client
         #endregion
 
         #region Helpers
+
+        /// <summary>
+        /// Check if current user can manage users (logged in with sufficient access level)
+        /// </summary>
+        private bool CanManageUsers()
+        {
+            // Must be logged in
+            if (string.IsNullOrEmpty(_validatedUsername))
+                return false;
+
+            // Check if user has required access level
+            return _validatedAccess >= _config.RequiredAccessLevelForAdmin;
+        }
 
         private void SetOperationResult(bool validate, bool create, bool delete, bool update, string message)
         {
@@ -879,6 +961,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             triList.SetSigTrueAction(_joinMap.LoadSelectedUserToInputs.JoinNumber, LoadSelectedUserToInputs);
             triList.SetSigTrueAction(_joinMap.UpdateSelectedUser.JoinNumber, UpdateSelectedUser);
             triList.SetSigTrueAction(_joinMap.DeleteSelectedUser.JoinNumber, DeleteSelectedUser);
+            triList.SetSigTrueAction(_joinMap.Logout.JoinNumber, Logout);
 
             // User list select buttons (1-20)
             for (uint i = 0; i < MaxUserListItems; i++)
@@ -907,6 +990,8 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             SaveEnabledFeedback.LinkInputSig(triList.BooleanInput[_joinMap.SaveEnabledFb.JoinNumber]);
             HasChangesFeedback.LinkInputSig(triList.BooleanInput[_joinMap.HasChangesFb.JoinNumber]);
             UpdateUserSuccessFeedback.LinkInputSig(triList.BooleanInput[_joinMap.UpdateUserSuccessFb.JoinNumber]);
+            IsLoggedInFeedback.LinkInputSig(triList.BooleanInput[_joinMap.IsLoggedInFb.JoinNumber]);
+            CanManageUsersFeedback.LinkInputSig(triList.BooleanInput[_joinMap.CanManageUsersFb.JoinNumber]);
 
             // Analog outputs to SIMPL
             UserCountFeedback.LinkInputSig(triList.UShortInput[_joinMap.UserCountFb.JoinNumber]);
@@ -945,6 +1030,8 @@ namespace PepperDash.Essentials.Plugin.Password.Client
                 EditingUsernameFeedback.FireUpdate();
                 SaveEnabledFeedback.FireUpdate();
                 HasChangesFeedback.FireUpdate();
+                IsLoggedInFeedback.FireUpdate();
+                CanManageUsersFeedback.FireUpdate();
             };
         }
 
