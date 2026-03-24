@@ -949,10 +949,10 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             this.LogError("Linking to EISC bridge at join {0}", joinStart);
 
             // Digital inputs from SIMPL
-            triList.SetSigTrueAction(_joinMap.ValidateUser.JoinNumber, ValidateUser);
+            triList.SetSigTrueAction(_joinMap.Login.JoinNumber, ValidateUser);
             triList.SetSigTrueAction(_joinMap.CreateUser.JoinNumber, CreateUser);
             triList.SetSigTrueAction(_joinMap.DeleteUser.JoinNumber, DeleteUser);
-            triList.SetSigTrueAction(_joinMap.ClearInputs.JoinNumber, ClearInputs);
+            triList.SetSigTrueAction(_joinMap.FormClearInputs.JoinNumber, ClearInputs);
             triList.SetSigTrueAction(_joinMap.RefreshUsers.JoinNumber, RefreshUsersFromServer);
             triList.SetSigTrueAction(_joinMap.SelectNextUser.JoinNumber, SelectNextUser);
             triList.SetSigTrueAction(_joinMap.SelectPreviousUser.JoinNumber, SelectPreviousUser);
@@ -971,24 +971,24 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             }
 
             // Unmask password (hold high)
-            triList.SetBoolSigAction(_joinMap.UnmaskPasswordInput.JoinNumber, SetUnmaskPassword);
+            triList.SetBoolSigAction(_joinMap.FormUnmaskPassword.JoinNumber, SetUnmaskPassword);
 
             // Analog inputs from SIMPL
             triList.SetUShortSigAction(_joinMap.SelectedUserIndex.JoinNumber, value => SetSelectedUserIndex(value));
-            triList.SetUShortSigAction(_joinMap.AccessLevelInput.JoinNumber, value => SetAccessLevelInput(value));
+            triList.SetUShortSigAction(_joinMap.FormAccessLevelInput.JoinNumber, value => SetAccessLevelInput(value));
 
             // Serial inputs from SIMPL
-            triList.SetStringSigAction(_joinMap.UsernameInput.JoinNumber, SetUsernameInput);
-            triList.SetStringSigAction(_joinMap.PasswordInput.JoinNumber, SetPasswordInput);
-            triList.SetStringSigAction(_joinMap.AccessInput.JoinNumber, SetAccessInput);
+            triList.SetStringSigAction(_joinMap.FormUsernameInput.JoinNumber, SetUsernameInput);
+            triList.SetStringSigAction(_joinMap.FormPasswordInput.JoinNumber, SetPasswordInput);
+            triList.SetStringSigAction(_joinMap.FormAccessInput.JoinNumber, SetAccessInput);
 
             // Digital outputs to SIMPL
-            ValidateUserSuccessFeedback.LinkInputSig(triList.BooleanInput[_joinMap.ValidateUserSuccessFb.JoinNumber]);
+            ValidateUserSuccessFeedback.LinkInputSig(triList.BooleanInput[_joinMap.LoginSuccessFb.JoinNumber]);
             CreateUserSuccessFeedback.LinkInputSig(triList.BooleanInput[_joinMap.CreateUserSuccessFb.JoinNumber]);
             DeleteUserSuccessFeedback.LinkInputSig(triList.BooleanInput[_joinMap.DeleteUserSuccessFb.JoinNumber]);
             ServerConnectedFeedback.LinkInputSig(triList.BooleanInput[_joinMap.ServerConnectedFb.JoinNumber]);
-            SaveEnabledFeedback.LinkInputSig(triList.BooleanInput[_joinMap.SaveEnabledFb.JoinNumber]);
-            HasChangesFeedback.LinkInputSig(triList.BooleanInput[_joinMap.HasChangesFb.JoinNumber]);
+            SaveEnabledFeedback.LinkInputSig(triList.BooleanInput[_joinMap.EditSaveEnabledFb.JoinNumber]);
+            HasChangesFeedback.LinkInputSig(triList.BooleanInput[_joinMap.EditHasChangesFb.JoinNumber]);
             UpdateUserSuccessFeedback.LinkInputSig(triList.BooleanInput[_joinMap.UpdateUserSuccessFb.JoinNumber]);
             IsLoggedInFeedback.LinkInputSig(triList.BooleanInput[_joinMap.IsLoggedInFb.JoinNumber]);
             CanManageUsersFeedback.LinkInputSig(triList.BooleanInput[_joinMap.CanManageUsersFb.JoinNumber]);
@@ -997,20 +997,20 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             UserCountFeedback.LinkInputSig(triList.UShortInput[_joinMap.UserCountFb.JoinNumber]);
             SelectedUserIndexFeedback.LinkInputSig(triList.UShortInput[_joinMap.SelectedUserIndex.JoinNumber]);
             SelectedUserAccessFeedback.LinkInputSig(triList.UShortInput[_joinMap.SelectedUserAccessFb.JoinNumber]);
-            ValidatedUserAccessFeedback.LinkInputSig(triList.UShortInput[_joinMap.ValidatedUserAccessFb.JoinNumber]);
+            ValidatedUserAccessFeedback.LinkInputSig(triList.UShortInput[_joinMap.LoggedInUserAccessFb.JoinNumber]);
 
             // Serial outputs to SIMPL
             triList.SetString(_joinMap.DeviceName.JoinNumber, Name);
-            UsernameInputFeedback.LinkInputSig(triList.StringInput[_joinMap.UsernameInputFb.JoinNumber]);
-            PasswordInputFeedback.LinkInputSig(triList.StringInput[_joinMap.PasswordInputFb.JoinNumber]);
-            AccessInputFeedback.LinkInputSig(triList.StringInput[_joinMap.AccessInputFb.JoinNumber]);
+            UsernameInputFeedback.LinkInputSig(triList.StringInput[_joinMap.FormUsernameInputFb.JoinNumber]);
+            PasswordInputFeedback.LinkInputSig(triList.StringInput[_joinMap.FormPasswordInputFb.JoinNumber]);
+            AccessInputFeedback.LinkInputSig(triList.StringInput[_joinMap.FormAccessInputFb.JoinNumber]);
             UserListFeedback.LinkInputSig(triList.StringInput[_joinMap.UserListFb.JoinNumber]);
             StatusMessageFeedback.LinkInputSig(triList.StringInput[_joinMap.StatusMessageFb.JoinNumber]);
             SelectedUsernameFeedback.LinkInputSig(triList.StringInput[_joinMap.SelectedUsernameFb.JoinNumber]);
             SelectedPasswordFeedback.LinkInputSig(triList.StringInput[_joinMap.SelectedPasswordFb.JoinNumber]);
             SelectedAccessFeedback.LinkInputSig(triList.StringInput[_joinMap.SelectedAccessFb.JoinNumber]);
-            ValidatedUsernameFeedback.LinkInputSig(triList.StringInput[_joinMap.ValidatedUsernameFb.JoinNumber]);
-            EditingUsernameFeedback.LinkInputSig(triList.StringInput[_joinMap.EditingUsernameFb.JoinNumber]);
+            ValidatedUsernameFeedback.LinkInputSig(triList.StringInput[_joinMap.LoggedInUsernameFb.JoinNumber]);
+            EditingUsernameFeedback.LinkInputSig(triList.StringInput[_joinMap.EditOriginalUsernameFb.JoinNumber]);
 
             // Online status
             triList.OnlineStatusChange += (sender, args) =>

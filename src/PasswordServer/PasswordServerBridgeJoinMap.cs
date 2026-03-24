@@ -31,9 +31,9 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 	/// SERIAL (1-14):
 	///   1     : Device name (ToSIMPL)
 	///   2     : Status message (ToSIMPL)
-	///   3     : UsernameInput/ValidatedUsernameFb (bidirectional)
-	///   4     : Password input (FromSIMPL)
-	///   5     : Access input (FromSIMPL)
+	///   3     : FormUsernameInput/ValidatedUsernameFb (bidirectional)
+	///   4     : Form password input (FromSIMPL)
+	///   5     : Form access input (FromSIMPL)
 	///   11    : User list JSON (ToSIMPL)
 	///   12    : Selected username (ToSIMPL)
 	///   13    : Selected password (ToSIMPL)
@@ -287,40 +287,40 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// Username input for create/delete/validate operations
+		/// Form username input for create/delete/validate operations
 		/// </summary>
-		[JoinName("UsernameInput")]
-		public JoinDataComplete UsernameInput = new JoinDataComplete(
+		[JoinName("FormUsernameInput")]
+		public JoinDataComplete FormUsernameInput = new JoinDataComplete(
 			new JoinData { JoinNumber = 3, JoinSpan = 1 },
 			new JoinMetadata
 			{
-				Description = "Username Input",
+				Description = "Form Username Input",
 				JoinCapabilities = eJoinCapabilities.FromSIMPL,
 				JoinType = eJoinType.Serial
 			});
 
 		/// <summary>
-		/// Password input for create/validate/update operations
+		/// Form password input for create/validate/update operations
 		/// </summary>
-		[JoinName("PasswordInput")]
-		public JoinDataComplete PasswordInput = new JoinDataComplete(
+		[JoinName("FormPasswordInput")]
+		public JoinDataComplete FormPasswordInput = new JoinDataComplete(
 			new JoinData { JoinNumber = 4, JoinSpan = 1 },
 			new JoinMetadata
 			{
-				Description = "Password Input",
+				Description = "Form Password Input",
 				JoinCapabilities = eJoinCapabilities.FromSIMPL,
 				JoinType = eJoinType.Serial
 			});
 
 		/// <summary>
-		/// Access level input for create/update operations
+		/// Form access level input for create/update operations
 		/// </summary>
-		[JoinName("AccessInput")]
-		public JoinDataComplete AccessInput = new JoinDataComplete(
+		[JoinName("FormAccessInput")]
+		public JoinDataComplete FormAccessInput = new JoinDataComplete(
 			new JoinData { JoinNumber = 5, JoinSpan = 1 },
 			new JoinMetadata
 			{
-				Description = "Access Level Input",
+				Description = "Form Access Level Input",
 				JoinCapabilities = eJoinCapabilities.FromSIMPL,
 				JoinType = eJoinType.Serial
 			});

@@ -16,22 +16,21 @@ namespace PepperDash.Essentials.Plugin.Password.Client
     ///   11-24 : Actions (FromSIMPL)
     ///   31-50 : User list select/visible (FromSIMPL input, ToSIMPL feedback on same joins)
     /// 
-    /// ANALOG (1-5):
+    /// ANALOG (1-4):
     ///   1     : User count (ToSIMPL)
     ///   2     : Selected user index (bidirectional)
-    ///   3     : Selected user access (ToSIMPL)
-    ///   4     : Validated user access (ToSIMPL)
-    ///   5     : Access level input (FromSIMPL)
+    ///   3     : Form access level input (FromSIMPL) / Selected user access (ToSIMPL)
+    ///   4     : Logged-in user access (ToSIMPL)
     /// 
     /// SERIAL (1-50):
     ///   1     : Device name (ToSIMPL)
     ///   2     : Status message (ToSIMPL)
-    ///   3     : Validated username (ToSIMPL)
-    ///   4     : Username input/feedback (bidirectional)
-    ///   5     : Password input/feedback (bidirectional)
-    ///   6     : Access input/feedback (bidirectional)
+    ///   3     : Logged-in username (ToSIMPL)
+    ///   4     : Form username input/feedback (bidirectional)
+    ///   5     : Form password input/feedback (bidirectional)
+    ///   6     : Form access input/feedback (bidirectional)
     ///   11    : User list JSON (ToSIMPL)
-    ///   12    : Editing username (ToSIMPL)
+    ///   12    : Edit original username (ToSIMPL)
     ///   13    : Selected username (ToSIMPL)
     ///   14    : Selected password (ToSIMPL)
     ///   15    : Selected access (ToSIMPL)
@@ -83,14 +82,14 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// D4: Validate/login success feedback
+        /// D4: Login success feedback
         /// </summary>
-        [JoinName("ValidateUserSuccessFb")]
-        public JoinDataComplete ValidateUserSuccessFb = new JoinDataComplete(
+        [JoinName("LoginSuccessFb")]
+        public JoinDataComplete LoginSuccessFb = new JoinDataComplete(
             new JoinData { JoinNumber = 4, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Validate/Login Success Feedback",
+                Description = "Login Success Feedback",
                 JoinCapabilities = eJoinCapabilities.ToSIMPL,
                 JoinType = eJoinType.Digital
             });
@@ -135,27 +134,27 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// D8: Save button enabled feedback
+        /// D8: Edit save button enabled feedback
         /// </summary>
-        [JoinName("SaveEnabledFb")]
-        public JoinDataComplete SaveEnabledFb = new JoinDataComplete(
+        [JoinName("EditSaveEnabledFb")]
+        public JoinDataComplete EditSaveEnabledFb = new JoinDataComplete(
             new JoinData { JoinNumber = 8, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Save Button Enabled Feedback",
+                Description = "Edit Save Button Enabled Feedback",
                 JoinCapabilities = eJoinCapabilities.ToSIMPL,
                 JoinType = eJoinType.Digital
             });
 
         /// <summary>
-        /// D9: Has unsaved changes feedback
+        /// D9: Edit has unsaved changes feedback
         /// </summary>
-        [JoinName("HasChangesFb")]
-        public JoinDataComplete HasChangesFb = new JoinDataComplete(
+        [JoinName("EditHasChangesFb")]
+        public JoinDataComplete EditHasChangesFb = new JoinDataComplete(
             new JoinData { JoinNumber = 9, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Has Unsaved Changes Feedback",
+                Description = "Edit Has Unsaved Changes Feedback",
                 JoinCapabilities = eJoinCapabilities.ToSIMPL,
                 JoinType = eJoinType.Digital
             });
@@ -163,14 +162,14 @@ namespace PepperDash.Essentials.Plugin.Password.Client
         // ===== Actions (11-24) =====
 
         /// <summary>
-        /// D11: Validate/Login trigger
+        /// D11: Login trigger
         /// </summary>
-        [JoinName("ValidateUser")]
-        public JoinDataComplete ValidateUser = new JoinDataComplete(
+        [JoinName("Login")]
+        public JoinDataComplete Login = new JoinDataComplete(
             new JoinData { JoinNumber = 11, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Validate/Login (Pulse)",
+                Description = "Login (Pulse)",
                 JoinCapabilities = eJoinCapabilities.FromSIMPL,
                 JoinType = eJoinType.Digital
             });
@@ -280,27 +279,27 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// D20: Clear all inputs trigger
+        /// D20: Clear all form inputs trigger
         /// </summary>
-        [JoinName("ClearInputs")]
-        public JoinDataComplete ClearInputs = new JoinDataComplete(
+        [JoinName("FormClearInputs")]
+        public JoinDataComplete FormClearInputs = new JoinDataComplete(
             new JoinData { JoinNumber = 20, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Clear All Inputs (Pulse)",
+                Description = "Form Clear All Inputs (Pulse)",
                 JoinCapabilities = eJoinCapabilities.FromSIMPL,
                 JoinType = eJoinType.Digital
             });
 
         /// <summary>
-        /// D21: Unmask password (hold high)
+        /// D21: Unmask form password (hold high)
         /// </summary>
-        [JoinName("UnmaskPasswordInput")]
-        public JoinDataComplete UnmaskPasswordInput = new JoinDataComplete(
+        [JoinName("FormUnmaskPassword")]
+        public JoinDataComplete FormUnmaskPassword = new JoinDataComplete(
             new JoinData { JoinNumber = 21, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Unmask Password (Hold high)",
+                Description = "Form Unmask Password (Hold high)",
                 JoinCapabilities = eJoinCapabilities.FromSIMPL,
                 JoinType = eJoinType.Digital
             });
@@ -403,14 +402,14 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Access level input (numeric)
+        /// Form access level input (numeric)
         /// </summary>
-        [JoinName("AccessLevelInput")]
-        public JoinDataComplete AccessLevelInput = new JoinDataComplete(
+        [JoinName("FormAccessLevelInput")]
+        public JoinDataComplete FormAccessLevelInput = new JoinDataComplete(
             new JoinData { JoinNumber = 3, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Access Level Input (analog)",
+                Description = "Form Access Level Input (analog)",
                 JoinCapabilities = eJoinCapabilities.FromSIMPL,
                 JoinType = eJoinType.Analog
             });
@@ -430,14 +429,14 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// A4: Validated user's access level feedback
+        /// A4: Logged-in user's access level feedback
         /// </summary>
-        [JoinName("ValidatedUserAccessFb")]
-        public JoinDataComplete ValidatedUserAccessFb = new JoinDataComplete(
+        [JoinName("LoggedInUserAccessFb")]
+        public JoinDataComplete LoggedInUserAccessFb = new JoinDataComplete(
             new JoinData { JoinNumber = 4, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Validated User Access Feedback",
+                Description = "Logged-In User Access Feedback",
                 JoinCapabilities = eJoinCapabilities.ToSIMPL,
                 JoinType = eJoinType.Analog
             });
@@ -474,92 +473,92 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Validated username feedback
+        /// Logged-in username feedback
         /// </summary>
-        [JoinName("ValidatedUsernameFb")]
-        public JoinDataComplete ValidatedUsernameFb = new JoinDataComplete(
+        [JoinName("LoggedInUsernameFb")]
+        public JoinDataComplete LoggedInUsernameFb = new JoinDataComplete(
             new JoinData { JoinNumber = 3, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Validated Username Feedback",
+                Description = "Logged-In Username Feedback",
                 JoinCapabilities = eJoinCapabilities.ToSIMPL,
                 JoinType = eJoinType.Serial
             });
 
-        // <summary>
-        /// Username input (bidirectional - input and feedback on same join for EISC alignment)
+        /// <summary>
+        /// Form username input (bidirectional - input and feedback on same join for EISC alignment)
         /// </summary>
-        [JoinName("UsernameInput")]
-        public JoinDataComplete UsernameInput = new JoinDataComplete(
+        [JoinName("FormUsernameInput")]
+        public JoinDataComplete FormUsernameInput = new JoinDataComplete(
             new JoinData { JoinNumber = 4, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Username Input",
+                Description = "Form Username Input",
                 JoinCapabilities = eJoinCapabilities.FromSIMPL,
                 JoinType = eJoinType.Serial
             });
 
         /// <summary>
-        /// Username input feedback (same join as input for EISC alignment)
+        /// Form username input feedback (same join as input for EISC alignment)
         /// </summary>
-        [JoinName("UsernameInputFb")]
-        public JoinDataComplete UsernameInputFb = new JoinDataComplete(
+        [JoinName("FormUsernameInputFb")]
+        public JoinDataComplete FormUsernameInputFb = new JoinDataComplete(
             new JoinData { JoinNumber = 4, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Username Input Feedback",
+                Description = "Form Username Input Feedback",
                 JoinCapabilities = eJoinCapabilities.ToSIMPL,
                 JoinType = eJoinType.Serial
             });
 
         /// <summary>
-        /// S5: Password input (bidirectional - input and feedback on same join for EISC alignment)
+        /// S5: Form password input (bidirectional - input and feedback on same join for EISC alignment)
         /// </summary>
-        [JoinName("PasswordInput")]
-        public JoinDataComplete PasswordInput = new JoinDataComplete(
+        [JoinName("FormPasswordInput")]
+        public JoinDataComplete FormPasswordInput = new JoinDataComplete(
             new JoinData { JoinNumber = 5, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Password Input",
+                Description = "Form Password Input",
                 JoinCapabilities = eJoinCapabilities.FromSIMPL,
                 JoinType = eJoinType.Serial
             });
 
         /// <summary>
-        /// S5: Password input feedback (same join as input for EISC alignment)
+        /// S5: Form password input feedback (same join as input for EISC alignment)
         /// </summary>
-        [JoinName("PasswordInputFb")]
-        public JoinDataComplete PasswordInputFb = new JoinDataComplete(
+        [JoinName("FormPasswordInputFb")]
+        public JoinDataComplete FormPasswordInputFb = new JoinDataComplete(
             new JoinData { JoinNumber = 5, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Password Input Feedback (masked/unmasked)",
+                Description = "Form Password Input Feedback (masked/unmasked)",
                 JoinCapabilities = eJoinCapabilities.ToSIMPL,
                 JoinType = eJoinType.Serial
             });
 
         /// <summary>
-        /// S6: Access input (bidirectional - input and feedback on same join for EISC alignment)
+        /// S6: Form access input (bidirectional - input and feedback on same join for EISC alignment)
         /// </summary>
-        [JoinName("AccessInput")]
-        public JoinDataComplete AccessInput = new JoinDataComplete(
+        [JoinName("FormAccessInput")]
+        public JoinDataComplete FormAccessInput = new JoinDataComplete(
             new JoinData { JoinNumber = 6, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Access Level Input (string)",
+                Description = "Form Access Level Input (string)",
                 JoinCapabilities = eJoinCapabilities.FromSIMPL,
                 JoinType = eJoinType.Serial
             });
 
         /// <summary>
-        /// S6: Access input feedback (same join as input for EISC alignment)
+        /// S6: Form access input feedback (same join as input for EISC alignment)
         /// </summary>
-        [JoinName("AccessInputFb")]
-        public JoinDataComplete AccessInputFb = new JoinDataComplete(
+        [JoinName("FormAccessInputFb")]
+        public JoinDataComplete FormAccessInputFb = new JoinDataComplete(
             new JoinData { JoinNumber = 6, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Access Level Input Feedback",
+                Description = "Form Access Level Input Feedback",
                 JoinCapabilities = eJoinCapabilities.ToSIMPL,
                 JoinType = eJoinType.Serial
             });
@@ -578,14 +577,14 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// S12: Original username being edited feedback
+        /// S12: Edit original username feedback
         /// </summary>
-        [JoinName("EditingUsernameFb")]
-        public JoinDataComplete EditingUsernameFb = new JoinDataComplete(
+        [JoinName("EditOriginalUsernameFb")]
+        public JoinDataComplete EditOriginalUsernameFb = new JoinDataComplete(
             new JoinData { JoinNumber = 12, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Original Username Being Edited",
+                Description = "Edit Original Username Being Edited",
                 JoinCapabilities = eJoinCapabilities.ToSIMPL,
                 JoinType = eJoinType.Serial
             });

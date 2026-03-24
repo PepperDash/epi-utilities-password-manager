@@ -1049,9 +1049,9 @@ namespace PepperDash.Essentials.Plugin.Password.Server
             this.LogInformation("Linking Password Server to EISC bridge at join {0}", joinStart);
 
             // Serial inputs
-            triList.SetStringSigAction(joinMap.UsernameInput.JoinNumber, value => _usernameInput = value);
-            triList.SetStringSigAction(joinMap.PasswordInput.JoinNumber, value => _passwordInput = value);
-            triList.SetStringSigAction(joinMap.AccessInput.JoinNumber, value => _accessInput = value);
+            triList.SetStringSigAction(joinMap.FormUsernameInput.JoinNumber, value => _usernameInput = value);
+            triList.SetStringSigAction(joinMap.FormPasswordInput.JoinNumber, value => _passwordInput = value);
+            triList.SetStringSigAction(joinMap.FormAccessInput.JoinNumber, value => _accessInput = value);
 
             // Digital triggers
             triList.SetSigTrueAction(joinMap.CreateUser.JoinNumber, () =>
