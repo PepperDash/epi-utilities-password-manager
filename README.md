@@ -209,9 +209,9 @@ Join numbers are organized by type with input/output pairs sharing the same join
 | ---- | --------------------- | ------------- | --------------------------------------- |
 | 1    | UserCountFb           | To SIMPL      | Total number of users stored            |
 | 2    | SelectedUserIndex     | To/From SIMPL | Currently selected user index (0-based) |
+| 3    | AccessLevelInput      | From SIMPL    | Access level input (analog)             |
 | 3    | SelectedUserAccessFb  | To SIMPL      | Selected user's access level            |
 | 4    | ValidatedUserAccessFb | To SIMPL      | Access level of logged-in user          |
-| 5    | AccessLevelInput      | From SIMPL    | Access level input (analog)             |
 
 ### Serial Joins
 
@@ -235,23 +235,23 @@ Join numbers are organized by type with input/output pairs sharing the same join
 
 ## Bridge Join Map (Server)
 
-The server can also be bridged directly (once only) for direct access without a client.
+The server can also be bridged directly (once only) for direct access without a client. Input/output pairs share the same join for EISC alignment.
 
 ### Digital Joins
 
-| Join | Name                  | Direction  | Description                            |
-| ---- | --------------------- | ---------- | -------------------------------------- |
-| 1    | CreateUserSuccessFb   | To SIMPL   | Pulse high when user creation succeeds |
-| 2    | DeleteUserSuccessFb   | To SIMPL   | Pulse high when user deletion succeeds |
-| 3    | ValidateUserSuccessFb | To SIMPL   | Pulse high when validation succeeds    |
-| 11   | ValidateUser          | From SIMPL | Pulse to validate credentials          |
-| 12   | CreateUser            | From SIMPL | Pulse to create a new user             |
-| 13   | DeleteUser            | From SIMPL | Pulse to delete user                   |
-| 14   | UpdatePassword        | From SIMPL | Pulse to update password               |
-| 15   | UpdateAccess          | From SIMPL | Pulse to update access level           |
-| 16   | RefreshUsers          | From SIMPL | Pulse to reload users from file        |
-| 17   | SelectNextUser        | From SIMPL | Pulse to select next user              |
-| 18   | SelectPreviousUser    | From SIMPL | Pulse to select previous user          |
+| Join | Name                  | Direction     | Description                              |
+| ---- | --------------------- | ------------- | ---------------------------------------- |
+| 1    | CreateUser            | From SIMPL    | Pulse to create a new user               |
+| 1    | CreateUserSuccessFb   | To SIMPL      | Pulse high when user creation succeeds   |
+| 2    | DeleteUser            | From SIMPL    | Pulse to delete user                     |
+| 2    | DeleteUserSuccessFb   | To SIMPL      | Pulse high when user deletion succeeds   |
+| 3    | ValidateUser          | From SIMPL    | Pulse to validate credentials            |
+| 3    | ValidateUserSuccessFb | To SIMPL      | Pulse high when validation succeeds      |
+| 4    | UpdatePassword        | From SIMPL    | Pulse to update password                 |
+| 5    | UpdateAccess          | From SIMPL    | Pulse to update access level             |
+| 11   | RefreshUsers          | From SIMPL    | Pulse to reload users from file          |
+| 12   | SelectNextUser        | From SIMPL    | Pulse to select next user                |
+| 13   | SelectPreviousUser    | From SIMPL    | Pulse to select previous user            |
 
 ### Analog Joins
 
@@ -268,10 +268,10 @@ The server can also be bridged directly (once only) for direct access without a 
 | ---- | ------------------- | ---------- | ------------------------------- |
 | 1    | DeviceName          | To SIMPL   | Device name                     |
 | 2    | StatusMessageFb     | To SIMPL   | Last operation status message   |
+| 3    | UsernameInput       | From SIMPL | Username input                  |
 | 3    | ValidatedUsernameFb | To SIMPL   | Username of last validated user |
-| 4    | UsernameInput       | From SIMPL | Username input                  |
-| 5    | PasswordInput       | From SIMPL | Password input                  |
-| 6    | AccessInput         | From SIMPL | Access level input              |
+| 4    | PasswordInput       | From SIMPL | Password input                  |
+| 5    | AccessInput         | From SIMPL | Access level input              |
 | 11   | UserListFb          | To SIMPL   | JSON array of all users         |
 | 12   | SelectedUsernameFb  | To SIMPL   | Selected user's username        |
 | 13   | SelectedPasswordFb  | To SIMPL   | Selected user's password        |
