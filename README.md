@@ -180,13 +180,13 @@ Join numbers are organized by type with input/output pairs sharing the same join
 | 1     | ServerConnectedFb        | To SIMPL   | High when connected to server             |
 | 2     | IsLoggedInFb             | To SIMPL   | High when a user is logged in             |
 | 3     | CanManageUsersFb         | To SIMPL   | High when logged-in user can manage users |
-| 4     | ValidateUserSuccessFb    | To SIMPL   | Pulse high when login succeeds            |
+| 4     | LoginSuccessFb           | To SIMPL   | Pulse high when login succeeds            |
 | 5     | CreateUserSuccessFb      | To SIMPL   | Pulse high when user creation succeeds    |
 | 6     | DeleteUserSuccessFb      | To SIMPL   | Pulse high when user deletion succeeds    |
 | 7     | UpdateUserSuccessFb      | To SIMPL   | Pulse high when user update succeeds      |
-| 8     | SaveEnabledFb            | To SIMPL   | High when save button should be enabled   |
-| 9     | HasChangesFb             | To SIMPL   | High when inputs differ from original     |
-| 11    | ValidateUser             | From SIMPL | Pulse to validate credentials (login)     |
+| 8     | EditSaveEnabledFb        | To SIMPL   | High when edit save button should be enabled |
+| 9     | EditHasChangesFb         | To SIMPL   | High when edit inputs differ from original |
+| 11    | Login                    | From SIMPL | Pulse to login with form credentials      |
 | 12    | Logout                   | From SIMPL | Pulse to logout current user              |
 | 13    | CreateUser               | From SIMPL | Pulse to create a new user                |
 | 14    | DeleteUser               | From SIMPL | Pulse to delete user by username input    |
@@ -195,8 +195,8 @@ Join numbers are organized by type with input/output pairs sharing the same join
 | 17    | UpdateAccess             | From SIMPL | Pulse to update access level only         |
 | 18    | UpdateSelectedUser       | From SIMPL | Pulse to save changes to selected user    |
 | 19    | LoadSelectedUserToInputs | From SIMPL | Pulse to load selected user into inputs   |
-| 20    | ClearInputs              | From SIMPL | Pulse to clear all input fields           |
-| 21    | UnmaskPasswordInput      | From SIMPL | **Hold high** to show unmasked password   |
+| 20    | FormClearInputs          | From SIMPL | Pulse to clear all form input fields      |
+| 21    | FormUnmaskPassword       | From SIMPL | **Hold high** to show unmasked password   |
 | 22    | RefreshUsers             | From SIMPL | Pulse to reload users from server         |
 | 23    | SelectNextUser           | From SIMPL | Pulse to select next user in list         |
 | 24    | SelectPreviousUser       | From SIMPL | Pulse to select previous user in list     |
@@ -205,33 +205,33 @@ Join numbers are organized by type with input/output pairs sharing the same join
 
 ### Analog Joins
 
-| Join | Name                  | Direction     | Description                             |
-| ---- | --------------------- | ------------- | --------------------------------------- |
-| 1    | UserCountFb           | To SIMPL      | Total number of users stored            |
-| 2    | SelectedUserIndex     | To/From SIMPL | Currently selected user index (0-based) |
-| 3    | AccessLevelInput      | From SIMPL    | Access level input (analog)             |
-| 3    | SelectedUserAccessFb  | To SIMPL      | Selected user's access level            |
-| 4    | ValidatedUserAccessFb | To SIMPL      | Access level of logged-in user          |
+| Join | Name                    | Direction     | Description                             |
+| ---- | ----------------------- | ------------- | --------------------------------------- |
+| 1    | UserCountFb             | To SIMPL      | Total number of users stored            |
+| 2    | SelectedUserIndex       | To/From SIMPL | Currently selected user index (0-based) |
+| 3    | FormAccessLevelInput    | From SIMPL    | Form access level input (analog)        |
+| 3    | SelectedUserAccessFb    | To SIMPL      | Selected user's access level            |
+| 4    | LoggedInUserAccessFb    | To SIMPL      | Access level of logged-in user          |
 
 ### Serial Joins
 
-| Join  | Name                 | Direction  | Description                           |
-| ----- | -------------------- | ---------- | ------------------------------------- |
-| 1     | DeviceName           | To SIMPL   | Device name                           |
-| 2     | StatusMessageFb      | To SIMPL   | Last operation status message         |
-| 3     | ValidatedUsernameFb  | To SIMPL   | Username of logged-in user            |
-| 4     | UsernameInput        | From SIMPL | Username input                        |
-| 4     | UsernameInputFb      | To SIMPL   | Username input feedback               |
-| 5     | PasswordInput        | From SIMPL | Password input                        |
-| 5     | PasswordInputFb      | To SIMPL   | Password feedback (masked/unmasked)   |
-| 6     | AccessInput          | From SIMPL | Access level input (string)           |
-| 6     | AccessInputFb        | To SIMPL   | Access input feedback                 |
-| 11    | UserListFb           | To SIMPL   | JSON array of all users               |
-| 12    | EditingUsernameFb    | To SIMPL   | Original username being edited        |
-| 13    | SelectedUsernameFb   | To SIMPL   | Selected user's username              |
-| 14    | SelectedPasswordFb   | To SIMPL   | Selected user's password (masked)     |
-| 15    | SelectedAccessFb     | To SIMPL   | Selected user's access level (string) |
-| 31-50 | UserListItemFb[1-20] | To SIMPL   | Username at each list position        |
+| Join  | Name                   | Direction  | Description                           |
+| ----- | ---------------------- | ---------- | ------------------------------------- |
+| 1     | DeviceName             | To SIMPL   | Device name                           |
+| 2     | StatusMessageFb        | To SIMPL   | Last operation status message         |
+| 3     | LoggedInUsernameFb     | To SIMPL   | Username of logged-in user            |
+| 4     | FormUsernameInput      | From SIMPL | Form username input                   |
+| 4     | FormUsernameInputFb    | To SIMPL   | Form username input feedback          |
+| 5     | FormPasswordInput      | From SIMPL | Form password input                   |
+| 5     | FormPasswordInputFb    | To SIMPL   | Form password feedback (masked/unmasked) |
+| 6     | FormAccessInput        | From SIMPL | Form access level input (string)      |
+| 6     | FormAccessInputFb      | To SIMPL   | Form access input feedback            |
+| 11    | UserListFb             | To SIMPL   | JSON array of all users               |
+| 12    | EditOriginalUsernameFb | To SIMPL   | Original username being edited        |
+| 13    | SelectedUsernameFb     | To SIMPL   | Selected user's username              |
+| 14    | SelectedPasswordFb     | To SIMPL   | Selected user's password (masked)     |
+| 15    | SelectedAccessFb       | To SIMPL   | Selected user's access level (string) |
+| 31-50 | UserListItemFb[1-20]   | To SIMPL   | Username at each list position        |
 
 ## Bridge Join Map (Server)
 
@@ -268,10 +268,10 @@ The server can also be bridged directly (once only) for direct access without a 
 | ---- | ------------------- | ---------- | ------------------------------- |
 | 1    | DeviceName          | To SIMPL   | Device name                     |
 | 2    | StatusMessageFb     | To SIMPL   | Last operation status message   |
-| 3    | UsernameInput       | From SIMPL | Username input                  |
+| 3    | FormUsernameInput   | From SIMPL | Form username input             |
 | 3    | ValidatedUsernameFb | To SIMPL   | Username of last validated user |
-| 4    | PasswordInput       | From SIMPL | Password input                  |
-| 5    | AccessInput         | From SIMPL | Access level input              |
+| 4    | FormPasswordInput   | From SIMPL | Form password input             |
+| 5    | FormAccessInput     | From SIMPL | Form access level input         |
 | 11   | UserListFb          | To SIMPL   | JSON array of all users         |
 | 12   | SelectedUsernameFb  | To SIMPL   | Selected user's username        |
 | 13   | SelectedPasswordFb  | To SIMPL   | Selected user's password        |
@@ -280,20 +280,20 @@ The server can also be bridged directly (once only) for direct access without a 
 ## UI Workflow Example
 
 ### Login Flow
-1. User enters username via `UsernameInput` (S4)
-2. User enters password via `PasswordInput` (S5)
-3. On Login press, pulse `ValidateUser` (D11)
-4. Check `ValidateUserSuccessFb` (D4) for success pulse
+1. User enters username via `FormUsernameInput` (S4)
+2. User enters password via `FormPasswordInput` (S5)
+3. On Login press, pulse `Login` (D11)
+4. Check `LoginSuccessFb` (D4) for success pulse
 5. When logged in, `IsLoggedInFb` (D2) goes high
-6. `ValidatedUsernameFb` (S3) shows logged-in username
-7. `ValidatedUserAccessFb` (A4) shows access level
+6. `LoggedInUsernameFb` (S3) shows logged-in username
+7. `LoggedInUserAccessFb` (A4) shows access level
 8. If access level >= `requiredAccessLevelForAdmin`, `CanManageUsersFb` (D3) goes high
 
 ### Logout Flow
 1. Pulse `Logout` (D12)
 2. `IsLoggedInFb` (D2) goes low
 3. `CanManageUsersFb` (D3) goes low
-4. `ValidatedUsernameFb` (S3) clears
+4. `LoggedInUsernameFb` (S3) clears
 
 ### Manage Users List
 1. Display users using `UserListItemFb[1-20]` (S31-50)
@@ -304,19 +304,19 @@ The server can also be bridged directly (once only) for direct access without a 
 
 ### Add User
 1. Check `CanManageUsersFb` (D3) - must be high to create users
-2. User enters username via `UsernameInput` (S4)
-3. User enters password via `PasswordInput` (S5)
-4. Monitor `SaveEnabledFb` (D8) to enable/disable Save button
+2. User enters username via `FormUsernameInput` (S4)
+3. User enters password via `FormPasswordInput` (S5)
+4. Monitor `EditSaveEnabledFb` (D8) to enable/disable Save button
 5. On Save press, pulse `CreateUser` (D13)
 6. Check `CreateUserSuccessFb` (D5) and `StatusMessageFb` (S2) for result
 
 ### Edit User
 1. Check `CanManageUsersFb` (D3) - must be high to edit users
 2. Pulse `LoadSelectedUserToInputs` (D19) to populate input fields
-3. `EditingUsernameFb` (S12) shows original username
-4. User modifies `UsernameInput` and/or `PasswordInput`
-5. Monitor `HasChangesFb` (D9) to detect unsaved changes
-6. Monitor `SaveEnabledFb` (D8) to enable/disable Save button
+3. `EditOriginalUsernameFb` (S12) shows original username
+4. User modifies `FormUsernameInput` and/or `FormPasswordInput`
+5. Monitor `EditHasChangesFb` (D9) to detect unsaved changes
+6. Monitor `EditSaveEnabledFb` (D8) to enable/disable Save button
 7. On Save press, pulse `UpdateSelectedUser` (D18)
 8. Check `UpdateUserSuccessFb` (D7) for result
 
@@ -326,7 +326,7 @@ The server can also be bridged directly (once only) for direct access without a 
 3. Check `DeleteUserSuccessFb` (D6) for result
 
 ### Password Visibility Toggle
-- Hold `UnmaskPasswordInput` (D21) high to show actual password in `PasswordInputFb`
+- Hold `FormUnmaskPassword` (D21) high to show actual password in `FormPasswordInputFb`
 - Release to show masked password
 
 ## Console Commands
