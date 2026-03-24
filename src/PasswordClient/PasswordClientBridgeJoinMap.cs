@@ -403,6 +403,20 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
+        /// Access level input (numeric)
+        /// </summary>
+        [JoinName("AccessLevelInput")]
+        public JoinDataComplete AccessLevelInput = new JoinDataComplete(
+            new JoinData { JoinNumber = 3, JoinSpan = 1 },
+            new JoinMetadata
+            {
+                Description = "Access Level Input (analog)",
+                JoinCapabilities = eJoinCapabilities.FromSIMPL,
+                JoinType = eJoinType.Analog
+            });
+
+
+        /// <summary>
         /// A3: Selected user's access level feedback
         /// </summary>
         [JoinName("SelectedUserAccessFb")]
@@ -428,25 +442,13 @@ namespace PepperDash.Essentials.Plugin.Password.Client
                 JoinType = eJoinType.Analog
             });
 
-        /// <summary>
-        /// A5: Access level input (numeric)
-        /// </summary>
-        [JoinName("AccessLevelInput")]
-        public JoinDataComplete AccessLevelInput = new JoinDataComplete(
-            new JoinData { JoinNumber = 5, JoinSpan = 1 },
-            new JoinMetadata
-            {
-                Description = "Access Level Input (analog)",
-                JoinCapabilities = eJoinCapabilities.FromSIMPL,
-                JoinType = eJoinType.Analog
-            });
 
         #endregion
 
         #region Serial
 
         /// <summary>
-        /// S1: Device name feedback
+        /// Device name feedback
         /// </summary>
         [JoinName("DeviceName")]
         public JoinDataComplete DeviceName = new JoinDataComplete(
@@ -459,7 +461,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// S2: Status message feedback
+        /// Status message feedback
         /// </summary>
         [JoinName("StatusMessageFb")]
         public JoinDataComplete StatusMessageFb = new JoinDataComplete(
@@ -472,7 +474,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// S3: Validated username feedback
+        /// Validated username feedback
         /// </summary>
         [JoinName("ValidatedUsernameFb")]
         public JoinDataComplete ValidatedUsernameFb = new JoinDataComplete(
@@ -484,8 +486,8 @@ namespace PepperDash.Essentials.Plugin.Password.Client
                 JoinType = eJoinType.Serial
             });
 
-        /// <summary>
-        /// S4: Username input (bidirectional - input and feedback on same join for EISC alignment)
+        // <summary>
+        /// Username input (bidirectional - input and feedback on same join for EISC alignment)
         /// </summary>
         [JoinName("UsernameInput")]
         public JoinDataComplete UsernameInput = new JoinDataComplete(
@@ -498,7 +500,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// S4: Username input feedback (same join as input for EISC alignment)
+        /// Username input feedback (same join as input for EISC alignment)
         /// </summary>
         [JoinName("UsernameInputFb")]
         public JoinDataComplete UsernameInputFb = new JoinDataComplete(

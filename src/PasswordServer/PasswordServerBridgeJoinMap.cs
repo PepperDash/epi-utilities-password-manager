@@ -8,12 +8,19 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 	/// <remarks>
 	/// Defines the EISC bridge joins for the Password Server.
 	/// Server can only be bridged once and provides status feedback and user management operations.
+	/// Input/output pairs share the same join for EISC alignment.
 	/// 
 	/// Join Layout:
 	/// 
-	/// DIGITAL (1-20):
-	///   1-3   : Success feedback pulses (ToSIMPL)
-	///   11-18 : Action triggers (FromSIMPL)
+	/// DIGITAL (1-13):
+	///   1     : CreateUser/CreateUserSuccessFb (bidirectional)
+	///   2     : DeleteUser/DeleteUserSuccessFb (bidirectional)
+	///   3     : ValidateUser/ValidateUserSuccessFb (bidirectional)
+	///   4     : UpdatePassword (FromSIMPL)
+	///   5     : UpdateAccess (FromSIMPL)
+	///   11    : RefreshUsers (FromSIMPL)
+	///   12    : SelectNextUser (FromSIMPL)
+	///   13    : SelectPreviousUser (FromSIMPL)
 	/// 
 	/// ANALOG (1-4):
 	///   1     : User count (ToSIMPL)
@@ -24,10 +31,9 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 	/// SERIAL (1-14):
 	///   1     : Device name (ToSIMPL)
 	///   2     : Status message (ToSIMPL)
-	///   3     : Validated username (ToSIMPL)
-	///   4     : Username input (FromSIMPL)
-	///   5     : Password input (FromSIMPL)
-	///   6     : Access input (FromSIMPL)
+	///   3     : UsernameInput/ValidatedUsernameFb (bidirectional)
+	///   4     : Password input (FromSIMPL)
+	///   5     : Access input (FromSIMPL)
 	///   11    : User list JSON (ToSIMPL)
 	///   12    : Selected username (ToSIMPL)
 	///   13    : Selected password (ToSIMPL)
@@ -37,10 +43,21 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 	{
 		#region Digital
 
-		// ===== Success Feedbacks (1-3) =====
+		/// <summary>
+		/// Create user trigger
+		/// </summary>
+		[JoinName("CreateUser")]
+		public JoinDataComplete CreateUser = new JoinDataComplete(
+			new JoinData { JoinNumber = 1, JoinSpan = 1 },
+			new JoinMetadata
+			{
+				Description = "Create User (Pulse)",
+				JoinCapabilities = eJoinCapabilities.FromSIMPL,
+				JoinType = eJoinType.Digital
+			});
 
 		/// <summary>
-		/// D1: Create user success feedback
+		/// Create user success feedback
 		/// </summary>
 		[JoinName("CreateUserSuccessFb")]
 		public JoinDataComplete CreateUserSuccessFb = new JoinDataComplete(
@@ -53,7 +70,21 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// D2: Delete user success feedback
+		/// Delete user trigger
+		/// </summary>
+		[JoinName("DeleteUser")]
+		public JoinDataComplete DeleteUser = new JoinDataComplete(
+			new JoinData { JoinNumber = 2, JoinSpan = 1 },
+			new JoinMetadata
+			{
+				Description = "Delete User (Pulse)",
+				JoinCapabilities = eJoinCapabilities.FromSIMPL,
+				JoinType = eJoinType.Digital
+			});
+
+
+		/// <summary>
+		/// Delete user success feedback
 		/// </summary>
 		[JoinName("DeleteUserSuccessFb")]
 		public JoinDataComplete DeleteUserSuccessFb = new JoinDataComplete(
@@ -66,7 +97,20 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// D3: Validate user success feedback
+		/// Validate user credentials trigger
+		/// </summary>
+		[JoinName("ValidateUser")]
+		public JoinDataComplete ValidateUser = new JoinDataComplete(
+			new JoinData { JoinNumber = 3, JoinSpan = 1 },
+			new JoinMetadata
+			{
+				Description = "Validate User Credentials (Pulse)",
+				JoinCapabilities = eJoinCapabilities.FromSIMPL,
+				JoinType = eJoinType.Digital
+			});
+
+		/// <summary>
+		/// Validate user success feedback
 		/// </summary>
 		[JoinName("ValidateUserSuccessFb")]
 		public JoinDataComplete ValidateUserSuccessFb = new JoinDataComplete(
@@ -78,53 +122,12 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 				JoinType = eJoinType.Digital
 			});
 
-		// ===== Actions (11-18) =====
-
 		/// <summary>
-		/// D11: Validate user credentials trigger
-		/// </summary>
-		[JoinName("ValidateUser")]
-		public JoinDataComplete ValidateUser = new JoinDataComplete(
-			new JoinData { JoinNumber = 11, JoinSpan = 1 },
-			new JoinMetadata
-			{
-				Description = "Validate User Credentials (Pulse)",
-				JoinCapabilities = eJoinCapabilities.FromSIMPL,
-				JoinType = eJoinType.Digital
-			});
-
-		/// <summary>
-		/// D12: Create user trigger
-		/// </summary>
-		[JoinName("CreateUser")]
-		public JoinDataComplete CreateUser = new JoinDataComplete(
-			new JoinData { JoinNumber = 12, JoinSpan = 1 },
-			new JoinMetadata
-			{
-				Description = "Create User (Pulse)",
-				JoinCapabilities = eJoinCapabilities.FromSIMPL,
-				JoinType = eJoinType.Digital
-			});
-
-		/// <summary>
-		/// D13: Delete user trigger
-		/// </summary>
-		[JoinName("DeleteUser")]
-		public JoinDataComplete DeleteUser = new JoinDataComplete(
-			new JoinData { JoinNumber = 13, JoinSpan = 1 },
-			new JoinMetadata
-			{
-				Description = "Delete User (Pulse)",
-				JoinCapabilities = eJoinCapabilities.FromSIMPL,
-				JoinType = eJoinType.Digital
-			});
-
-		/// <summary>
-		/// D14: Update selected user's password trigger
+		/// Update selected user's password trigger
 		/// </summary>
 		[JoinName("UpdatePassword")]
 		public JoinDataComplete UpdatePassword = new JoinDataComplete(
-			new JoinData { JoinNumber = 14, JoinSpan = 1 },
+			new JoinData { JoinNumber = 4, JoinSpan = 1 },
 			new JoinMetadata
 			{
 				Description = "Update Selected User's Password (Pulse)",
@@ -133,11 +136,11 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// D15: Update selected user's access level trigger
+		/// Update selected user's access level trigger
 		/// </summary>
 		[JoinName("UpdateAccess")]
 		public JoinDataComplete UpdateAccess = new JoinDataComplete(
-			new JoinData { JoinNumber = 15, JoinSpan = 1 },
+			new JoinData { JoinNumber = 5, JoinSpan = 1 },
 			new JoinMetadata
 			{
 				Description = "Update Selected User's Access Level (Pulse)",
@@ -146,11 +149,11 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// D16: Refresh users from file trigger
+		/// Refresh users from file trigger
 		/// </summary>
 		[JoinName("RefreshUsers")]
 		public JoinDataComplete RefreshUsers = new JoinDataComplete(
-			new JoinData { JoinNumber = 16, JoinSpan = 1 },
+			new JoinData { JoinNumber = 11, JoinSpan = 1 },
 			new JoinMetadata
 			{
 				Description = "Refresh Users List (Pulse)",
@@ -159,11 +162,11 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// D17: Select next user trigger
+		/// Select next user trigger
 		/// </summary>
 		[JoinName("SelectNextUser")]
 		public JoinDataComplete SelectNextUser = new JoinDataComplete(
-			new JoinData { JoinNumber = 17, JoinSpan = 1 },
+			new JoinData { JoinNumber = 12, JoinSpan = 1 },
 			new JoinMetadata
 			{
 				Description = "Select Next User",
@@ -172,11 +175,11 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// D18: Select previous user trigger
+		/// Select previous user trigger
 		/// </summary>
 		[JoinName("SelectPreviousUser")]
 		public JoinDataComplete SelectPreviousUser = new JoinDataComplete(
-			new JoinData { JoinNumber = 18, JoinSpan = 1 },
+			new JoinData { JoinNumber = 13, JoinSpan = 1 },
 			new JoinMetadata
 			{
 				Description = "Select Previous User",
@@ -245,7 +248,7 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 		#region Serial
 
 		/// <summary>
-		/// S1: Device name feedback
+		/// Device name feedback
 		/// </summary>
 		[JoinName("DeviceName")]
 		public JoinDataComplete DeviceName = new JoinDataComplete(
@@ -258,7 +261,7 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// S2: Status message feedback
+		/// Status message feedback
 		/// </summary>
 		[JoinName("StatusMessageFb")]
 		public JoinDataComplete StatusMessageFb = new JoinDataComplete(
@@ -271,7 +274,7 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// S3: Validated username feedback
+		/// Validated username feedback
 		/// </summary>
 		[JoinName("ValidatedUsernameFb")]
 		public JoinDataComplete ValidatedUsernameFb = new JoinDataComplete(
@@ -284,11 +287,11 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// S4: Username input for create/delete/validate operations
+		/// Username input for create/delete/validate operations
 		/// </summary>
 		[JoinName("UsernameInput")]
 		public JoinDataComplete UsernameInput = new JoinDataComplete(
-			new JoinData { JoinNumber = 4, JoinSpan = 1 },
+			new JoinData { JoinNumber = 3, JoinSpan = 1 },
 			new JoinMetadata
 			{
 				Description = "Username Input",
@@ -297,11 +300,11 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// S5: Password input for create/validate/update operations
+		/// Password input for create/validate/update operations
 		/// </summary>
 		[JoinName("PasswordInput")]
 		public JoinDataComplete PasswordInput = new JoinDataComplete(
-			new JoinData { JoinNumber = 5, JoinSpan = 1 },
+			new JoinData { JoinNumber = 4, JoinSpan = 1 },
 			new JoinMetadata
 			{
 				Description = "Password Input",
@@ -310,11 +313,11 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// S6: Access level input for create/update operations
+		/// Access level input for create/update operations
 		/// </summary>
 		[JoinName("AccessInput")]
 		public JoinDataComplete AccessInput = new JoinDataComplete(
-			new JoinData { JoinNumber = 6, JoinSpan = 1 },
+			new JoinData { JoinNumber = 5, JoinSpan = 1 },
 			new JoinMetadata
 			{
 				Description = "Access Level Input",
@@ -336,7 +339,7 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// S12: Selected user's username feedback
+		/// Selected user's username feedback
 		/// </summary>
 		[JoinName("SelectedUsernameFb")]
 		public JoinDataComplete SelectedUsernameFb = new JoinDataComplete(
@@ -349,7 +352,7 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// S13: Selected user's password feedback (masked based on config)
+		/// Selected user's password feedback (masked based on config)
 		/// </summary>
 		[JoinName("SelectedPasswordFb")]
 		public JoinDataComplete SelectedPasswordFb = new JoinDataComplete(
@@ -362,7 +365,7 @@ namespace PepperDash.Essentials.Plugin.Password.Server
 			});
 
 		/// <summary>
-		/// S14: Selected user's access level feedback (string)
+		/// Selected user's access level feedback (string)
 		/// </summary>
 		[JoinName("SelectedAccessFb")]
 		public JoinDataComplete SelectedAccessFb = new JoinDataComplete(
