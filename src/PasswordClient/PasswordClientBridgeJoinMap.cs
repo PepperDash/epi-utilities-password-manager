@@ -9,29 +9,42 @@ namespace PepperDash.Essentials.Plugin.Password.Client
     /// Defines the EISC bridge joins for password client operations.
     /// Multiple clients can be bridged to panels to interact with the server as the authentication authority.
     /// 
-    /// Join Layout:
+    /// Join Layout (input/output pairs share same join for EISC alignment):
     /// 
-    /// DIGITAL:
-    ///   Feedbacks (1-9)    - Server status, success feedbacks, login/admin status
-    ///   Actions (11-21)    - User actions (clear, unmask, validate, create, delete, update, logout)
-    ///   Navigation (25-27) - Refresh and list navigation
-    ///   User List (31-80)  - List select (31-50) and visibility (61-80)
+    /// DIGITAL (1-50):
+    ///   1-9   : Status feedbacks (ToSIMPL)
+    ///   11-24 : Actions (FromSIMPL)
+    ///   31-50 : User list select/visible (FromSIMPL input, ToSIMPL feedback on same joins)
     /// 
-    /// ANALOG:
-    ///   Core (1-5)         - Counts, indexes, access levels
+    /// ANALOG (1-5):
+    ///   1     : User count (ToSIMPL)
+    ///   2     : Selected user index (bidirectional)
+    ///   3     : Selected user access (ToSIMPL)
+    ///   4     : Validated user access (ToSIMPL)
+    ///   5     : Access level input (FromSIMPL)
     /// 
-    /// SERIAL:
-    ///   Device/Status (1-6)  - Device name, status, validated user, input feedbacks
-    ///   Inputs (7-9)         - User input fields
-    ///   List/Edit (11-15)    - User list JSON, editing username, selected user info
-    ///   User List (31-50)    - List item usernames
+    /// SERIAL (1-50):
+    ///   1     : Device name (ToSIMPL)
+    ///   2     : Status message (ToSIMPL)
+    ///   3     : Validated username (ToSIMPL)
+    ///   4     : Username input/feedback (bidirectional)
+    ///   5     : Password input/feedback (bidirectional)
+    ///   6     : Access input/feedback (bidirectional)
+    ///   11    : User list JSON (ToSIMPL)
+    ///   12    : Editing username (ToSIMPL)
+    ///   13    : Selected username (ToSIMPL)
+    ///   14    : Selected password (ToSIMPL)
+    ///   15    : Selected access (ToSIMPL)
+    ///   31-50 : User list item usernames (ToSIMPL)
     /// </remarks>
     public class PasswordClientBridgeJoinMap : JoinMapBaseAdvanced
     {
-        #region Digital - Feedbacks (1-7)
+        #region Digital
+
+        // ===== Status Feedbacks (1-9) =====
 
         /// <summary>
-        /// Feedback indicating server is connected
+        /// D1: Server connected feedback
         /// </summary>
         [JoinName("ServerConnectedFb")]
         public JoinDataComplete ServerConnectedFb = new JoinDataComplete(
@@ -44,89 +57,11 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Feedback indicating validation/login was successful
-        /// </summary>
-        [JoinName("ValidateUserSuccessFb")]
-        public JoinDataComplete ValidateUserSuccessFb = new JoinDataComplete(
-            new JoinData { JoinNumber = 2, JoinSpan = 1 },
-            new JoinMetadata
-            {
-                Description = "Validate/Login Success Feedback",
-                JoinCapabilities = eJoinCapabilities.ToSIMPL,
-                JoinType = eJoinType.Digital
-            });
-
-        /// <summary>
-        /// Feedback indicating create user was successful
-        /// </summary>
-        [JoinName("CreateUserSuccessFb")]
-        public JoinDataComplete CreateUserSuccessFb = new JoinDataComplete(
-            new JoinData { JoinNumber = 3, JoinSpan = 1 },
-            new JoinMetadata
-            {
-                Description = "Create User Success Feedback",
-                JoinCapabilities = eJoinCapabilities.ToSIMPL,
-                JoinType = eJoinType.Digital
-            });
-
-        /// <summary>
-        /// Feedback indicating delete user was successful
-        /// </summary>
-        [JoinName("DeleteUserSuccessFb")]
-        public JoinDataComplete DeleteUserSuccessFb = new JoinDataComplete(
-            new JoinData { JoinNumber = 4, JoinSpan = 1 },
-            new JoinMetadata
-            {
-                Description = "Delete User Success Feedback",
-                JoinCapabilities = eJoinCapabilities.ToSIMPL,
-                JoinType = eJoinType.Digital
-            });
-
-        /// <summary>
-        /// Feedback indicating update user was successful
-        /// </summary>
-        [JoinName("UpdateUserSuccessFb")]
-        public JoinDataComplete UpdateUserSuccessFb = new JoinDataComplete(
-            new JoinData { JoinNumber = 5, JoinSpan = 1 },
-            new JoinMetadata
-            {
-                Description = "Update User Success Feedback",
-                JoinCapabilities = eJoinCapabilities.ToSIMPL,
-                JoinType = eJoinType.Digital
-            });
-
-        /// <summary>
-        /// Feedback indicating save button should be enabled
-        /// </summary>
-        [JoinName("SaveEnabledFb")]
-        public JoinDataComplete SaveEnabledFb = new JoinDataComplete(
-            new JoinData { JoinNumber = 6, JoinSpan = 1 },
-            new JoinMetadata
-            {
-                Description = "Save Button Enabled Feedback",
-                JoinCapabilities = eJoinCapabilities.ToSIMPL,
-                JoinType = eJoinType.Digital
-            });
-
-        /// <summary>
-        /// Feedback indicating changes have been made to inputs
-        /// </summary>
-        [JoinName("HasChangesFb")]
-        public JoinDataComplete HasChangesFb = new JoinDataComplete(
-            new JoinData { JoinNumber = 7, JoinSpan = 1 },
-            new JoinMetadata
-            {
-                Description = "Has Unsaved Changes Feedback",
-                JoinCapabilities = eJoinCapabilities.ToSIMPL,
-                JoinType = eJoinType.Digital
-            });
-
-        /// <summary>
-        /// Feedback indicating user is logged in
+        /// D2: User is logged in feedback
         /// </summary>
         [JoinName("IsLoggedInFb")]
         public JoinDataComplete IsLoggedInFb = new JoinDataComplete(
-            new JoinData { JoinNumber = 8, JoinSpan = 1 },
+            new JoinData { JoinNumber = 2, JoinSpan = 1 },
             new JoinMetadata
             {
                 Description = "User Is Logged In Feedback",
@@ -135,11 +70,11 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Feedback indicating user can manage users (has admin access)
+        /// D3: User can manage users (has admin access) feedback
         /// </summary>
         [JoinName("CanManageUsersFb")]
         public JoinDataComplete CanManageUsersFb = new JoinDataComplete(
-            new JoinData { JoinNumber = 9, JoinSpan = 1 },
+            new JoinData { JoinNumber = 3, JoinSpan = 1 },
             new JoinMetadata
             {
                 Description = "Can Manage Users (Admin Access) Feedback",
@@ -147,42 +82,92 @@ namespace PepperDash.Essentials.Plugin.Password.Client
                 JoinType = eJoinType.Digital
             });
 
-        #endregion
-
-        #region Digital - Actions (11-20)
-
         /// <summary>
-        /// Trigger to clear all input fields
+        /// D4: Validate/login success feedback
         /// </summary>
-        [JoinName("ClearInputs")]
-        public JoinDataComplete ClearInputs = new JoinDataComplete(
-            new JoinData { JoinNumber = 11, JoinSpan = 1 },
+        [JoinName("ValidateUserSuccessFb")]
+        public JoinDataComplete ValidateUserSuccessFb = new JoinDataComplete(
+            new JoinData { JoinNumber = 4, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Clear All Inputs (Pulse)",
-                JoinCapabilities = eJoinCapabilities.FromSIMPL,
+                Description = "Validate/Login Success Feedback",
+                JoinCapabilities = eJoinCapabilities.ToSIMPL,
                 JoinType = eJoinType.Digital
             });
 
         /// <summary>
-        /// When high, shows unmasked password in PasswordInputFb
+        /// D5: Create user success feedback
         /// </summary>
-        [JoinName("UnmaskPasswordInput")]
-        public JoinDataComplete UnmaskPasswordInput = new JoinDataComplete(
-            new JoinData { JoinNumber = 12, JoinSpan = 1 },
+        [JoinName("CreateUserSuccessFb")]
+        public JoinDataComplete CreateUserSuccessFb = new JoinDataComplete(
+            new JoinData { JoinNumber = 5, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Unmask Password (Hold high)",
-                JoinCapabilities = eJoinCapabilities.FromSIMPL,
+                Description = "Create User Success Feedback",
+                JoinCapabilities = eJoinCapabilities.ToSIMPL,
                 JoinType = eJoinType.Digital
             });
 
         /// <summary>
-        /// Trigger to validate user credentials (login)
+        /// D6: Delete user success feedback
+        /// </summary>
+        [JoinName("DeleteUserSuccessFb")]
+        public JoinDataComplete DeleteUserSuccessFb = new JoinDataComplete(
+            new JoinData { JoinNumber = 6, JoinSpan = 1 },
+            new JoinMetadata
+            {
+                Description = "Delete User Success Feedback",
+                JoinCapabilities = eJoinCapabilities.ToSIMPL,
+                JoinType = eJoinType.Digital
+            });
+
+        /// <summary>
+        /// D7: Update user success feedback
+        /// </summary>
+        [JoinName("UpdateUserSuccessFb")]
+        public JoinDataComplete UpdateUserSuccessFb = new JoinDataComplete(
+            new JoinData { JoinNumber = 7, JoinSpan = 1 },
+            new JoinMetadata
+            {
+                Description = "Update User Success Feedback",
+                JoinCapabilities = eJoinCapabilities.ToSIMPL,
+                JoinType = eJoinType.Digital
+            });
+
+        /// <summary>
+        /// D8: Save button enabled feedback
+        /// </summary>
+        [JoinName("SaveEnabledFb")]
+        public JoinDataComplete SaveEnabledFb = new JoinDataComplete(
+            new JoinData { JoinNumber = 8, JoinSpan = 1 },
+            new JoinMetadata
+            {
+                Description = "Save Button Enabled Feedback",
+                JoinCapabilities = eJoinCapabilities.ToSIMPL,
+                JoinType = eJoinType.Digital
+            });
+
+        /// <summary>
+        /// D9: Has unsaved changes feedback
+        /// </summary>
+        [JoinName("HasChangesFb")]
+        public JoinDataComplete HasChangesFb = new JoinDataComplete(
+            new JoinData { JoinNumber = 9, JoinSpan = 1 },
+            new JoinMetadata
+            {
+                Description = "Has Unsaved Changes Feedback",
+                JoinCapabilities = eJoinCapabilities.ToSIMPL,
+                JoinType = eJoinType.Digital
+            });
+
+        // ===== Actions (11-24) =====
+
+        /// <summary>
+        /// D11: Validate/Login trigger
         /// </summary>
         [JoinName("ValidateUser")]
         public JoinDataComplete ValidateUser = new JoinDataComplete(
-            new JoinData { JoinNumber = 13, JoinSpan = 1 },
+            new JoinData { JoinNumber = 11, JoinSpan = 1 },
             new JoinMetadata
             {
                 Description = "Validate/Login (Pulse)",
@@ -191,11 +176,24 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Trigger to create a new user
+        /// D12: Logout trigger
+        /// </summary>
+        [JoinName("Logout")]
+        public JoinDataComplete Logout = new JoinDataComplete(
+            new JoinData { JoinNumber = 12, JoinSpan = 1 },
+            new JoinMetadata
+            {
+                Description = "Logout (Pulse)",
+                JoinCapabilities = eJoinCapabilities.FromSIMPL,
+                JoinType = eJoinType.Digital
+            });
+
+        /// <summary>
+        /// D13: Create user trigger
         /// </summary>
         [JoinName("CreateUser")]
         public JoinDataComplete CreateUser = new JoinDataComplete(
-            new JoinData { JoinNumber = 14, JoinSpan = 1 },
+            new JoinData { JoinNumber = 13, JoinSpan = 1 },
             new JoinMetadata
             {
                 Description = "Create User (Pulse)",
@@ -204,11 +202,11 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Trigger to delete a user by username input
+        /// D14: Delete user by input trigger
         /// </summary>
         [JoinName("DeleteUser")]
         public JoinDataComplete DeleteUser = new JoinDataComplete(
-            new JoinData { JoinNumber = 15, JoinSpan = 1 },
+            new JoinData { JoinNumber = 14, JoinSpan = 1 },
             new JoinMetadata
             {
                 Description = "Delete User By Input (Pulse)",
@@ -217,11 +215,11 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Delete the currently selected user
+        /// D15: Delete selected user trigger
         /// </summary>
         [JoinName("DeleteSelectedUser")]
         public JoinDataComplete DeleteSelectedUser = new JoinDataComplete(
-            new JoinData { JoinNumber = 16, JoinSpan = 1 },
+            new JoinData { JoinNumber = 15, JoinSpan = 1 },
             new JoinMetadata
             {
                 Description = "Delete Selected User (Pulse)",
@@ -230,11 +228,11 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Update selected user's password only
+        /// D16: Update selected user's password trigger
         /// </summary>
         [JoinName("UpdatePassword")]
         public JoinDataComplete UpdatePassword = new JoinDataComplete(
-            new JoinData { JoinNumber = 17, JoinSpan = 1 },
+            new JoinData { JoinNumber = 16, JoinSpan = 1 },
             new JoinMetadata
             {
                 Description = "Update Selected Password (Pulse)",
@@ -243,11 +241,11 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Update selected user's access level only
+        /// D17: Update selected user's access trigger
         /// </summary>
         [JoinName("UpdateAccess")]
         public JoinDataComplete UpdateAccess = new JoinDataComplete(
-            new JoinData { JoinNumber = 18, JoinSpan = 1 },
+            new JoinData { JoinNumber = 17, JoinSpan = 1 },
             new JoinMetadata
             {
                 Description = "Update Selected Access (Pulse)",
@@ -256,7 +254,20 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Load selected user's data into input fields for editing
+        /// D18: Save changes to selected user trigger
+        /// </summary>
+        [JoinName("UpdateSelectedUser")]
+        public JoinDataComplete UpdateSelectedUser = new JoinDataComplete(
+            new JoinData { JoinNumber = 18, JoinSpan = 1 },
+            new JoinMetadata
+            {
+                Description = "Save Changes To Selected User (Pulse)",
+                JoinCapabilities = eJoinCapabilities.FromSIMPL,
+                JoinType = eJoinType.Digital
+            });
+
+        /// <summary>
+        /// D19: Load selected user to inputs trigger
         /// </summary>
         [JoinName("LoadSelectedUserToInputs")]
         public JoinDataComplete LoadSelectedUserToInputs = new JoinDataComplete(
@@ -269,41 +280,37 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Save current inputs to selected user (username + password)
+        /// D20: Clear all inputs trigger
         /// </summary>
-        [JoinName("UpdateSelectedUser")]
-        public JoinDataComplete UpdateSelectedUser = new JoinDataComplete(
+        [JoinName("ClearInputs")]
+        public JoinDataComplete ClearInputs = new JoinDataComplete(
             new JoinData { JoinNumber = 20, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Save Changes To Selected User (Pulse)",
+                Description = "Clear All Inputs (Pulse)",
                 JoinCapabilities = eJoinCapabilities.FromSIMPL,
                 JoinType = eJoinType.Digital
             });
 
         /// <summary>
-        /// Logout current user
+        /// D21: Unmask password (hold high)
         /// </summary>
-        [JoinName("Logout")]
-        public JoinDataComplete Logout = new JoinDataComplete(
+        [JoinName("UnmaskPasswordInput")]
+        public JoinDataComplete UnmaskPasswordInput = new JoinDataComplete(
             new JoinData { JoinNumber = 21, JoinSpan = 1 },
             new JoinMetadata
             {
-                Description = "Logout (Pulse)",
+                Description = "Unmask Password (Hold high)",
                 JoinCapabilities = eJoinCapabilities.FromSIMPL,
                 JoinType = eJoinType.Digital
             });
 
-        #endregion
-
-        #region Digital - Navigation (25-27)
-
         /// <summary>
-        /// Trigger to refresh users from server
+        /// D22: Refresh users from server trigger
         /// </summary>
         [JoinName("RefreshUsers")]
         public JoinDataComplete RefreshUsers = new JoinDataComplete(
-            new JoinData { JoinNumber = 25, JoinSpan = 1 },
+            new JoinData { JoinNumber = 22, JoinSpan = 1 },
             new JoinMetadata
             {
                 Description = "Refresh Users (Pulse)",
@@ -312,11 +319,11 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Select next user in list
+        /// D23: Select next user trigger
         /// </summary>
         [JoinName("SelectNextUser")]
         public JoinDataComplete SelectNextUser = new JoinDataComplete(
-            new JoinData { JoinNumber = 26, JoinSpan = 1 },
+            new JoinData { JoinNumber = 23, JoinSpan = 1 },
             new JoinMetadata
             {
                 Description = "Select Next User",
@@ -325,11 +332,11 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Select previous user in list
+        /// D24: Select previous user trigger
         /// </summary>
         [JoinName("SelectPreviousUser")]
         public JoinDataComplete SelectPreviousUser = new JoinDataComplete(
-            new JoinData { JoinNumber = 27, JoinSpan = 1 },
+            new JoinData { JoinNumber = 24, JoinSpan = 1 },
             new JoinMetadata
             {
                 Description = "Select Previous User",
@@ -337,12 +344,10 @@ namespace PepperDash.Essentials.Plugin.Password.Client
                 JoinType = eJoinType.Digital
             });
 
-        #endregion
-
-        #region Digital - User List (31-80)
+        // ===== User List (31-50) =====
 
         /// <summary>
-        /// User list item select buttons (1-20)
+        /// D31-50: User list item select (input) and visible feedback (output) - same joins for EISC alignment
         /// </summary>
         [JoinName("UserListSelect")]
         public JoinDataComplete UserListSelect = new JoinDataComplete(
@@ -355,11 +360,11 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// User list item visible feedback (1-20)
+        /// D31-50: User list item visible feedback (same joins as select for EISC alignment)
         /// </summary>
         [JoinName("UserListVisibleFb")]
         public JoinDataComplete UserListVisibleFb = new JoinDataComplete(
-            new JoinData { JoinNumber = 61, JoinSpan = 20 },
+            new JoinData { JoinNumber = 31, JoinSpan = 20 },
             new JoinMetadata
             {
                 Description = "User List Item Visible [1-20]",
@@ -369,10 +374,10 @@ namespace PepperDash.Essentials.Plugin.Password.Client
 
         #endregion
 
-        #region Analog (1-5)
+        #region Analog
 
         /// <summary>
-        /// Total number of users
+        /// A1: User count feedback
         /// </summary>
         [JoinName("UserCountFb")]
         public JoinDataComplete UserCountFb = new JoinDataComplete(
@@ -385,7 +390,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Currently selected user index (0-based)
+        /// A2: Selected user index (bidirectional - set and feedback)
         /// </summary>
         [JoinName("SelectedUserIndex")]
         public JoinDataComplete SelectedUserIndex = new JoinDataComplete(
@@ -398,7 +403,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Selected user's access level
+        /// A3: Selected user's access level feedback
         /// </summary>
         [JoinName("SelectedUserAccessFb")]
         public JoinDataComplete SelectedUserAccessFb = new JoinDataComplete(
@@ -411,7 +416,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Validated user's access level
+        /// A4: Validated user's access level feedback
         /// </summary>
         [JoinName("ValidatedUserAccessFb")]
         public JoinDataComplete ValidatedUserAccessFb = new JoinDataComplete(
@@ -424,7 +429,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Access level input (numeric)
+        /// A5: Access level input (numeric)
         /// </summary>
         [JoinName("AccessLevelInput")]
         public JoinDataComplete AccessLevelInput = new JoinDataComplete(
@@ -438,10 +443,10 @@ namespace PepperDash.Essentials.Plugin.Password.Client
 
         #endregion
 
-        #region Serial - Device/Status (1-6)
+        #region Serial
 
         /// <summary>
-        /// Device name
+        /// S1: Device name feedback
         /// </summary>
         [JoinName("DeviceName")]
         public JoinDataComplete DeviceName = new JoinDataComplete(
@@ -454,7 +459,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Status message
+        /// S2: Status message feedback
         /// </summary>
         [JoinName("StatusMessageFb")]
         public JoinDataComplete StatusMessageFb = new JoinDataComplete(
@@ -467,7 +472,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Validated username feedback
+        /// S3: Validated username feedback
         /// </summary>
         [JoinName("ValidatedUsernameFb")]
         public JoinDataComplete ValidatedUsernameFb = new JoinDataComplete(
@@ -480,7 +485,20 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Username input feedback - shows current username input value
+        /// S4: Username input (bidirectional - input and feedback on same join for EISC alignment)
+        /// </summary>
+        [JoinName("UsernameInput")]
+        public JoinDataComplete UsernameInput = new JoinDataComplete(
+            new JoinData { JoinNumber = 4, JoinSpan = 1 },
+            new JoinMetadata
+            {
+                Description = "Username Input",
+                JoinCapabilities = eJoinCapabilities.FromSIMPL,
+                JoinType = eJoinType.Serial
+            });
+
+        /// <summary>
+        /// S4: Username input feedback (same join as input for EISC alignment)
         /// </summary>
         [JoinName("UsernameInputFb")]
         public JoinDataComplete UsernameInputFb = new JoinDataComplete(
@@ -493,7 +511,20 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Password input feedback - shows masked/unmasked password input
+        /// S5: Password input (bidirectional - input and feedback on same join for EISC alignment)
+        /// </summary>
+        [JoinName("PasswordInput")]
+        public JoinDataComplete PasswordInput = new JoinDataComplete(
+            new JoinData { JoinNumber = 5, JoinSpan = 1 },
+            new JoinMetadata
+            {
+                Description = "Password Input",
+                JoinCapabilities = eJoinCapabilities.FromSIMPL,
+                JoinType = eJoinType.Serial
+            });
+
+        /// <summary>
+        /// S5: Password input feedback (same join as input for EISC alignment)
         /// </summary>
         [JoinName("PasswordInputFb")]
         public JoinDataComplete PasswordInputFb = new JoinDataComplete(
@@ -506,7 +537,20 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Access level input feedback - shows current access input value
+        /// S6: Access input (bidirectional - input and feedback on same join for EISC alignment)
+        /// </summary>
+        [JoinName("AccessInput")]
+        public JoinDataComplete AccessInput = new JoinDataComplete(
+            new JoinData { JoinNumber = 6, JoinSpan = 1 },
+            new JoinMetadata
+            {
+                Description = "Access Level Input (string)",
+                JoinCapabilities = eJoinCapabilities.FromSIMPL,
+                JoinType = eJoinType.Serial
+            });
+
+        /// <summary>
+        /// S6: Access input feedback (same join as input for EISC alignment)
         /// </summary>
         [JoinName("AccessInputFb")]
         public JoinDataComplete AccessInputFb = new JoinDataComplete(
@@ -518,55 +562,8 @@ namespace PepperDash.Essentials.Plugin.Password.Client
                 JoinType = eJoinType.Serial
             });
 
-        #endregion
-
-        #region Serial - Inputs (7-9)
-
         /// <summary>
-        /// Username input
-        /// </summary>
-        [JoinName("UsernameInput")]
-        public JoinDataComplete UsernameInput = new JoinDataComplete(
-            new JoinData { JoinNumber = 7, JoinSpan = 1 },
-            new JoinMetadata
-            {
-                Description = "Username Input",
-                JoinCapabilities = eJoinCapabilities.FromSIMPL,
-                JoinType = eJoinType.Serial
-            });
-
-        /// <summary>
-        /// Password input
-        /// </summary>
-        [JoinName("PasswordInput")]
-        public JoinDataComplete PasswordInput = new JoinDataComplete(
-            new JoinData { JoinNumber = 8, JoinSpan = 1 },
-            new JoinMetadata
-            {
-                Description = "Password Input",
-                JoinCapabilities = eJoinCapabilities.FromSIMPL,
-                JoinType = eJoinType.Serial
-            });
-
-        /// <summary>
-        /// Access level input (string)
-        /// </summary>
-        [JoinName("AccessInput")]
-        public JoinDataComplete AccessInput = new JoinDataComplete(
-            new JoinData { JoinNumber = 9, JoinSpan = 1 },
-            new JoinMetadata
-            {
-                Description = "Access Level Input (string)",
-                JoinCapabilities = eJoinCapabilities.FromSIMPL,
-                JoinType = eJoinType.Serial
-            });
-
-        #endregion
-
-        #region Serial - List/Edit (11-15)
-
-        /// <summary>
-        /// User list JSON
+        /// S11: User list JSON feedback
         /// </summary>
         [JoinName("UserListFb")]
         public JoinDataComplete UserListFb = new JoinDataComplete(
@@ -579,7 +576,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Original username being edited (for tracking changes)
+        /// S12: Original username being edited feedback
         /// </summary>
         [JoinName("EditingUsernameFb")]
         public JoinDataComplete EditingUsernameFb = new JoinDataComplete(
@@ -592,7 +589,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Selected user's username
+        /// S13: Selected user's username feedback
         /// </summary>
         [JoinName("SelectedUsernameFb")]
         public JoinDataComplete SelectedUsernameFb = new JoinDataComplete(
@@ -605,7 +602,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Selected user's password (masked)
+        /// S14: Selected user's password feedback (masked)
         /// </summary>
         [JoinName("SelectedPasswordFb")]
         public JoinDataComplete SelectedPasswordFb = new JoinDataComplete(
@@ -618,7 +615,7 @@ namespace PepperDash.Essentials.Plugin.Password.Client
             });
 
         /// <summary>
-        /// Selected user's access level
+        /// S15: Selected user's access level feedback
         /// </summary>
         [JoinName("SelectedAccessFb")]
         public JoinDataComplete SelectedAccessFb = new JoinDataComplete(
@@ -630,12 +627,8 @@ namespace PepperDash.Essentials.Plugin.Password.Client
                 JoinType = eJoinType.Serial
             });
 
-        #endregion
-
-        #region Serial - User List (31-50)
-
         /// <summary>
-        /// User list item usernames (1-20)
+        /// S31-50: User list item usernames feedback
         /// </summary>
         [JoinName("UserListItemFb")]
         public JoinDataComplete UserListItemFb = new JoinDataComplete(
