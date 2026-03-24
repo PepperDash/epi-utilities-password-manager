@@ -1,6 +1,6 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using PepperDash.Core;
+using PepperDash.Core.Logging;
 using PepperDash.Essentials.Core;
 using PepperDash.Essentials.Core.Config;
 
@@ -21,7 +21,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
         public PasswordManagerServerFactory()
         {
             TypeNames = new List<string> { "passwordManagerServer" };
-            MinimumEssentialsFrameworkVersion = "2.12.1";
+            MinimumEssentialsFrameworkVersion = "2.24.5";
         }
 
         /// <summary>
@@ -29,12 +29,12 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
         /// </summary>
         public override EssentialsDevice BuildDevice(DeviceConfig dc)
         {
-            Debug.Console(1, "[{0}] Building Password Manager Server...", dc.Key);
+            Debug.LogMessage(Serilog.Events.LogEventLevel.Information, "[{key}] Building Password Manager Server...", dc.Key);
 
             var config = dc.Properties.ToObject<PasswordManagerServerConfig>();
             if (config == null)
             {
-                Debug.Console(0, "[{0}] Failed to parse config", dc.Key);
+                Debug.LogMessage(Serilog.Events.LogEventLevel.Error, "[{key}] Failed to parse config", dc.Key);
                 return null;
             }
 

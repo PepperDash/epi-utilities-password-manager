@@ -1,5 +1,4 @@
 using System.Collections.Generic;
-using Newtonsoft.Json;
 using PepperDash.Core;
 using PepperDash.Essentials.Core;
 using PepperDash.Essentials.Core.Config;
@@ -29,18 +28,18 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
         /// </summary>
         public override EssentialsDevice BuildDevice(DeviceConfig dc)
         {
-            Debug.Console(1, "[{0}] Building Password Manager Client...", dc.Key);
+            Debug.LogMessage(Serilog.Events.LogEventLevel.Information, "[{key}] Building Password Manager Client...", dc.Key);
 
             var config = dc.Properties.ToObject<PasswordManagerClientConfig>();
             if (config == null)
             {
-                Debug.Console(0, "[{0}] Failed to parse config", dc.Key);
+                Debug.LogMessage(Serilog.Events.LogEventLevel.Error, "[{key}] Failed to parse config", dc.Key);
                 return null;
             }
 
             if (string.IsNullOrEmpty(config.ServerKey))
             {
-                Debug.Console(0, "[{0}] ServerKey is required", dc.Key);
+                Debug.LogMessage(Serilog.Events.LogEventLevel.Error, "[{key}] ServerKey is required", dc.Key);
                 return null;
             }
 

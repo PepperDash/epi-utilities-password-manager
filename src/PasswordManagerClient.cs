@@ -4,6 +4,7 @@ using Crestron.SimplSharp;
 using Crestron.SimplSharpPro.DeviceSupport;
 using Newtonsoft.Json;
 using PepperDash.Core;
+using PepperDash.Core.Logging;
 using PepperDash.Essentials.Core;
 using PepperDash.Essentials.Core.Bridges;
 
@@ -187,32 +188,32 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
 
         private void InitializeFeedbacks()
         {
-            IsOnlineFeedback = new BoolFeedback(() => _serverConnected);
-            ServerConnectedFeedback = new BoolFeedback(() => _serverConnected);
-            ValidateUserSuccessFeedback = new BoolFeedback(() => _validateSuccess);
-            CreateUserSuccessFeedback = new BoolFeedback(() => _createSuccess);
-            DeleteUserSuccessFeedback = new BoolFeedback(() => _deleteSuccess);
+            IsOnlineFeedback = new BoolFeedback("isOnline", () => _serverConnected);
+            ServerConnectedFeedback = new BoolFeedback("serverConnected", () => _serverConnected);
+            ValidateUserSuccessFeedback = new BoolFeedback("validateUserSuccess", () => _validateSuccess);
+            CreateUserSuccessFeedback = new BoolFeedback("createUserSuccess", () => _createSuccess);
+            DeleteUserSuccessFeedback = new BoolFeedback("deleteUserSuccess", () => _deleteSuccess);
 
-            UserCountFeedback = new IntFeedback(() => _cachedUsers.Count);
-            SelectedUserIndexFeedback = new IntFeedback(() => _selectedUserIndex);
-            SelectedUserAccessFeedback = new IntFeedback(() => GetSelectedUserAccess());
-            ValidatedUserAccessFeedback = new IntFeedback(() => _validatedAccess);
+            UserCountFeedback = new IntFeedback("userCount", () => _cachedUsers.Count);
+            SelectedUserIndexFeedback = new IntFeedback("selectedUserIndex", () => _selectedUserIndex);
+            SelectedUserAccessFeedback = new IntFeedback("selectedUserAccess", () => GetSelectedUserAccess());
+            ValidatedUserAccessFeedback = new IntFeedback("validatedUserAccess", () => _validatedAccess);
 
-            UsernameInputFeedback = new StringFeedback(() => _usernameInput);
-            PasswordInputFeedback = new StringFeedback(() => GetPasswordInputDisplay());
-            AccessInputFeedback = new StringFeedback(() => _accessInput);
-            UserListFeedback = new StringFeedback(() => GetUserListJson());
-            StatusMessageFeedback = new StringFeedback(() => _statusMessage);
-            SelectedUsernameFeedback = new StringFeedback(() => GetSelectedUsername());
-            SelectedPasswordFeedback = new StringFeedback(() => GetSelectedPassword());
-            SelectedAccessFeedback = new StringFeedback(() => GetSelectedAccess());
-            ValidatedUsernameFeedback = new StringFeedback(() => _validatedUsername);
-            EditingUsernameFeedback = new StringFeedback(() => _editingUsername);
+            UsernameInputFeedback = new StringFeedback("usernameInput", () => _usernameInput);
+            PasswordInputFeedback = new StringFeedback("passwordInput", () => GetPasswordInputDisplay());
+            AccessInputFeedback = new StringFeedback("accessInput", () => _accessInput);
+            UserListFeedback = new StringFeedback("userList", () => GetUserListJson());
+            StatusMessageFeedback = new StringFeedback("statusMessage", () => _statusMessage);
+            SelectedUsernameFeedback = new StringFeedback("selectedUsername", () => GetSelectedUsername());
+            SelectedPasswordFeedback = new StringFeedback("selectedPassword", () => GetSelectedPassword());
+            SelectedAccessFeedback = new StringFeedback("selectedAccess", () => GetSelectedAccess());
+            ValidatedUsernameFeedback = new StringFeedback("validatedUsername", () => _validatedUsername);
+            EditingUsernameFeedback = new StringFeedback("editingUsername", () => _editingUsername);
 
             // Edit mode feedbacks
-            SaveEnabledFeedback = new BoolFeedback(() => GetSaveEnabled());
-            HasChangesFeedback = new BoolFeedback(() => GetHasChanges());
-            UpdateUserSuccessFeedback = new BoolFeedback(() => _updateSuccess);
+            SaveEnabledFeedback = new BoolFeedback("saveEnabled", () => GetSaveEnabled());
+            HasChangesFeedback = new BoolFeedback("hasChanges", () => GetHasChanges());
+            UpdateUserSuccessFeedback = new BoolFeedback("updateUserSuccess", () => _updateSuccess);
         }
 
         /// <summary>
@@ -228,7 +229,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
         {
             if (string.IsNullOrEmpty(_config.ServerKey))
             {
-                Debug.Console(0, this, "Error: ServerKey is not configured");
+                this.LogInformation("ServerKey is not configured");
                 SetStatusMessage("Error: Server not configured");
                 return;
             }
@@ -236,7 +237,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
             var device = DeviceManager.GetDeviceForKey(_config.ServerKey);
             if (device == null)
             {
-                Debug.Console(0, this, "Error: Server '{0}' not found", _config.ServerKey);
+                this.LogInformation("Server '{0}' not found", _config.ServerKey);
                 SetStatusMessage($"Error: Server '{_config.ServerKey}' not found");
                 return;
             }
@@ -244,7 +245,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
             _server = device as PasswordManagerServer;
             if (_server == null)
             {
-                Debug.Console(0, this, "Error: Device '{0}' is not a PasswordManagerServer", _config.ServerKey);
+                this.LogInformation("Device '{0}' is not a PasswordManagerServer", _config.ServerKey);
                 SetStatusMessage("Error: Invalid server type");
                 return;
             }
@@ -256,7 +257,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
             // Initial load
             RefreshUsersFromServer();
 
-            Debug.Console(1, this, "Connected to server: {0}", _config.ServerKey);
+            this.LogError("Connected to server: {0}", _config.ServerKey);
             SetStatusMessage("Connected to server");
 
             ServerConnectedFeedback.FireUpdate();
@@ -349,7 +350,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
             EditingUsernameFeedback.FireUpdate();
             UpdateEditModeFeedbacks();
 
-            Debug.Console(2, this, "Inputs cleared");
+            this.LogVerbose("Inputs cleared");
         }
 
         /// <summary>
@@ -374,7 +375,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
             EditingUsernameFeedback.FireUpdate();
             UpdateEditModeFeedbacks();
 
-            Debug.Console(2, this, "Loaded user '{0}' to inputs for editing", user.Username);
+            this.LogVerbose("Loaded user '{0}' to inputs for editing", user.Username);
         }
 
         private bool GetSaveEnabled()
@@ -685,7 +686,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
         {
             if (index < 0 || index >= _cachedUsers.Count)
             {
-                Debug.Console(2, this, "Invalid user index: {0}", index);
+                this.LogVerbose("Invalid user index: {0}", index);
                 return;
             }
 
@@ -780,7 +781,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
             UpdateUserSuccessFeedback.FireUpdate();
             StatusMessageFeedback.FireUpdate();
 
-            Debug.Console(1, this, message);
+            this.LogError(message);
 
             // If any success flag is true, start timer to reset (creates pulse)
             if (validate || create || delete || update)
@@ -804,7 +805,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
         {
             _statusMessage = message;
             StatusMessageFeedback.FireUpdate();
-            Debug.Console(1, this, message);
+            this.LogError(message);
         }
 
         private string GetUserListJson()
@@ -825,7 +826,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
             }
             catch (Exception ex)
             {
-                Debug.Console(0, this, "Error serializing user list: {0}", ex.Message);
+                this.LogInformation("serializing user list: {0}", ex.Message);
                 return "[]";
             }
         }
@@ -861,7 +862,7 @@ namespace PepperDash.Essentials.Plugin.PasswordManager
                 _joinMap.SetCustomJoinData(joinMapSerialized);
             }
 
-            Debug.Console(1, this, "Linking to EISC bridge at join {0}", joinStart);
+            this.LogError("Linking to EISC bridge at join {0}", joinStart);
 
             // Digital inputs from SIMPL
             triList.SetSigTrueAction(_joinMap.ValidateUser.JoinNumber, ValidateUser);
