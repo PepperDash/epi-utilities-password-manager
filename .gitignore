@@ -357,3 +357,9 @@ MigrationBackup/
 *.clz
 *.projectinfo
 *.suo
+
+# macOS
+.DS_Store
+.AppleDouble
+.LSOverride
+._*
